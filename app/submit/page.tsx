@@ -56,14 +56,7 @@ export default function SubmitPage() {
           get priority. Approval usually takes 1–3 days.
         </p>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 340px',
-            gap: 48,
-            alignItems: 'start',
-          }}
-        >
+        <div className="submit-layout">
           <SubmitForm />
 
           <aside>

@@ -313,7 +313,7 @@ export default function SubmitForm() {
               — tick all that apply (at least one required)
             </span>
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div className="checkbox-grid">
             {CHECKBOXES.map((cb) => (
               <label
                 key={cb.name}
