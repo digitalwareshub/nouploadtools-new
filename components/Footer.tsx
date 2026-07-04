@@ -120,19 +120,7 @@ function ScrollToTop() {
 }
 
 export default function Footer() {
-  const [openIndex, setOpenIndex] = useState<number | null>(() => {
-    if (typeof window === 'undefined') return null;
-    const saved = sessionStorage.getItem('footer-open');
-    return saved !== null ? Number(saved) : null;
-  });
-
-  useEffect(() => {
-    if (openIndex === null) {
-      sessionStorage.removeItem('footer-open');
-    } else {
-      sessionStorage.setItem('footer-open', String(openIndex));
-    }
-  }, [openIndex]);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   function toggle(i: number) {
     setOpenIndex((prev) => (prev === i ? null : i));
