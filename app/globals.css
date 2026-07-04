@@ -41,3 +41,20 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* Mobile nav: hide centered links from main row, show them in second row */
+.nav-mobile-links {
+  display: none;
+}
+
+@media (max-width: 540px) {
+  .nav-links {
+    display: none !important;
+  }
+
+  .nav-mobile-links {
+    display: flex;
+    gap: 20px;
+    padding-bottom: 10px;
+  }
+}

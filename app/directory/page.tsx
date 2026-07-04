@@ -58,7 +58,7 @@ export default async function DirectoryPage() {
             Tool Directory
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-2)' }}>
-            {tools.length} verified tools · browser-based · privacy-first
+            {tools.length} listed tools · browser-based · privacy-first
           </p>
         </header>
         <DirectoryClient tools={tools} />

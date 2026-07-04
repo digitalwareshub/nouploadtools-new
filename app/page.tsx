@@ -111,9 +111,7 @@ export default async function HomePage() {
               >
                 {tools.length || '—'}
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 3 }}>
-                Verified tools
-              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 3 }}>Listed tools</div>
             </div>
             <div>
               <div
@@ -143,7 +141,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
             <Link
               href="/directory"
               style={{
@@ -160,23 +158,6 @@ export default async function HomePage() {
             >
               Browse directory →
             </Link>
-            <Link
-              href="/submit"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                color: 'var(--text)',
-                padding: '10px 22px',
-                borderRadius: 'var(--radius)',
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              Submit a tool
-            </Link>
             <a
               href="https://github.com/digitalwareshub/nouploadtools-new"
               target="_blank"
@@ -188,15 +169,15 @@ export default async function HomePage() {
                 background: 'var(--bg-card)',
                 border: '1px solid var(--border)',
                 color: 'var(--text-2)',
-                padding: '10px 22px',
+                padding: '10px 18px',
                 borderRadius: 'var(--radius)',
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 600,
               }}
             >
               <svg
-                width="15"
-                height="15"
+                width="14"
+                height="14"
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 aria-hidden="true"

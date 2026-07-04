@@ -77,15 +77,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};`,
-          }}
-        />
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};`,
+              }}
+            />
+          </>
+        )}
       </head>
       <body className={inter.className}>
         {children}
-        <script defer src="/_vercel/insights/script.js" />
+        {process.env.NODE_ENV === 'production' && (
+          <script defer src="/_vercel/insights/script.js" />
+        )}
       </body>
     </html>
   );

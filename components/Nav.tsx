@@ -13,6 +13,7 @@ export default function Nav() {
         padding: '0 24px',
       }}
     >
+      {/* Desktop row */}
       <div
         style={{
           maxWidth: 1100,
@@ -32,12 +33,14 @@ export default function Nav() {
             color: 'var(--text)',
             letterSpacing: '-0.02em',
             whiteSpace: 'nowrap',
+            flexShrink: 0,
           }}
         >
           No<span style={{ color: 'var(--accent)' }}>Upload</span>Tools
         </Link>
 
         <ul
+          className="nav-links"
           style={{
             display: 'flex',
             flex: 1,
@@ -71,9 +74,20 @@ export default function Nav() {
             fontSize: 13,
             fontWeight: 600,
             whiteSpace: 'nowrap',
+            flexShrink: 0,
           }}
         >
           + Submit a tool
+        </Link>
+      </div>
+
+      {/* Mobile second row — links only, hidden on desktop */}
+      <div className="nav-mobile-links">
+        <Link href="/directory" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+          Directory
+        </Link>
+        <Link href="/tracking-checker" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+          Tracking Checker
         </Link>
       </div>
     </nav>
