@@ -8,6 +8,7 @@ If you find a security vulnerability in NoUploadTools — including but not limi
 **Subject line:** `[SECURITY] NoUploadTools — brief description`
 
 Please include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact

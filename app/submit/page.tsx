@@ -142,6 +142,31 @@ export default function SubmitPage() {
                 ))}
               </ul>
             </div>
+            <div
+              style={{
+                border: '1px solid var(--border)',
+                borderRadius: 10,
+                padding: '18px 20px',
+                background: 'var(--bg-card)',
+                marginTop: 16,
+              }}
+            >
+              <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Open source</h3>
+              <p
+                style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.55, marginBottom: 10 }}
+              >
+                NoUploadTools itself is open source. You can review the project on GitHub before
+                submitting your tool.
+              </p>
+              <a
+                href="https://github.com/digitalwareshub/nouploadtools-new"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}
+              >
+                View source on GitHub →
+              </a>
+            </div>
           </aside>
         </div>
       </main>

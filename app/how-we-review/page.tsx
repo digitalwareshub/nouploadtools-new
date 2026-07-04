@@ -169,7 +169,42 @@ export default function HowWeReviewPage() {
             </ul>
           </div>
 
-          <p style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.65, marginTop: 32 }}>
+          <div
+            style={{
+              marginTop: 48,
+              padding: '20px 24px',
+              border: '1px solid var(--border)',
+              borderRadius: 10,
+              background: 'var(--bg-card)',
+            }}
+          >
+            <p
+              style={{
+                fontSize: 13,
+                fontWeight: 700,
+                letterSpacing: '.06em',
+                textTransform: 'uppercase',
+                color: 'var(--text-3)',
+                marginBottom: 8,
+              }}
+            >
+              NoUploadTools is open source
+            </p>
+            <p style={{ fontSize: 14, color: 'var(--text-2)', lineHeight: 1.65, marginBottom: 12 }}>
+              The directory itself is open source, so developers can review how submissions, badges,
+              and the tracking checker work.
+            </p>
+            <a
+              href="https://github.com/digitalwareshub/nouploadtools-new"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 600 }}
+            >
+              View source on GitHub →
+            </a>
+          </div>
+
+          <p style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.65, marginTop: 24 }}>
             Think a listed tool doesn&apos;t belong here, or want to flag an issue?{' '}
             <a href="/contact" style={{ color: 'var(--accent)' }}>
               Contact us

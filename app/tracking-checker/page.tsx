@@ -72,7 +72,15 @@ export default function TrackingCheckerPage() {
         >
           This checker performs a basic scan of the page HTML for common analytics, ad, and tracking
           scripts. It may not detect trackers loaded later by JavaScript, after user interaction, or
-          through server-side tracking.
+          through server-side tracking.{' '}
+          <a
+            href="https://github.com/digitalwareshub/nouploadtools-new"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--accent)' }}
+          >
+            The checker is open source — review how it works on GitHub.
+          </a>
         </p>
         <TrackingCheckerClient />
       </main>

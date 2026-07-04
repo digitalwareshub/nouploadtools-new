@@ -43,9 +43,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Environment variables
 
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| Variable                        | Description                   |
+| ------------------------------- | ----------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL     |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon/public key |
 
 Get these from your Supabase dashboard → Project Settings → API.
@@ -98,6 +98,7 @@ See [docs/tracking-checker.md](docs/tracking-checker.md) for full architecture n
 Use the [submit form](https://nouploadtools.com/submit) on the site.
 
 Tools are more likely to be approved if they:
+
 - Process files client-side (WebAssembly, JS)
 - Have a public GitHub repo
 - Require no account or login for core use

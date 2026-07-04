@@ -112,6 +112,14 @@ export default function Footer() {
               How We Review
             </Link>
             <a
+              href="https://github.com/digitalwareshub/nouploadtools-new"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: 13, color: 'var(--text-2)' }}
+            >
+              Source code
+            </a>
+            <a
               href="https://digiwares.xyz"
               target="_blank"
               rel="noopener noreferrer"
