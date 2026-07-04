@@ -1,0 +1,81 @@
+import Link from 'next/link';
+
+export default function Nav() {
+  return (
+    <nav
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        background: 'rgba(247,246,243,0.96)',
+        backdropFilter: 'blur(8px)',
+        borderBottom: '1px solid var(--border)',
+        padding: '0 24px',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          height: 54,
+          gap: 24,
+        }}
+      >
+        <Link
+          href="/"
+          style={{
+            fontSize: 15,
+            fontWeight: 700,
+            color: 'var(--text)',
+            letterSpacing: '-0.02em',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          No<span style={{ color: 'var(--accent)' }}>Upload</span>Tools
+        </Link>
+
+        <ul
+          style={{
+            display: 'flex',
+            flex: 1,
+            justifyContent: 'center',
+            gap: 20,
+            listStyle: 'none',
+          }}
+        >
+          <li>
+            <Link href="/directory" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+              Directory
+            </Link>
+          </li>
+          <li>
+            <Link href="/tracking-checker" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+              Tracking Checker
+            </Link>
+          </li>
+        </ul>
+
+        <Link
+          href="/submit"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 5,
+            background: 'var(--accent)',
+            color: '#fff',
+            padding: '7px 16px',
+            borderRadius: 'var(--radius)',
+            fontSize: 13,
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          + Submit a tool
+        </Link>
+      </div>
+    </nav>
+  );
+}
