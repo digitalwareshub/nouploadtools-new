@@ -1,6 +1,5 @@
-const SUPABASE_URL = 'https://djbbwvlzgsbkqqntgpoa.supabase.co';
-const SUPABASE_ANON =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYmJ3dmx6Z3Nia3FxbnRncG9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NTM1MzIsImV4cCI6MjA5ODIyOTUzMn0.ubhJGLV1jD5Y4kHnEbgXGhetvTWuAck-303BNmVjo4w';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
 
 export type ReviewStatus = 'pending' | 'claimed' | 'reviewed' | 'verified' | 'rejected';
 
