@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as dns } from 'dns';
 import { isIPv4, isIPv6 } from 'net';
+import { Redis } from '@upstash/redis';
+import { Ratelimit } from '@upstash/ratelimit';
+
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+const ratelimit =
+  redisUrl && redisToken
+    ? new Ratelimit({
+        redis: new Redis({ url: redisUrl, token: redisToken }),
+        limiter: Ratelimit.slidingWindow(10, '1 m'),
+        prefix: 'tracking-checker',
+      })
+    : null;
 
 const TRACKER_PATTERNS: Record<string, string[]> = {
   Analytics: [
@@ -184,6 +198,33 @@ async function safeFetch(startUrl: string): Promise<{ html: string; finalUrl: st
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limiting — before any expensive work
+  if (ratelimit) {
+    const ip =
+      req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      req.headers.get('x-real-ip') ??
+      'anonymous';
+    try {
+      const { success, limit, remaining, reset } = await ratelimit.limit(ip);
+      if (!success) {
+        return NextResponse.json(
+          { error: 'Too many scans. Please wait a minute and try again.' },
+          {
+            status: 429,
+            headers: {
+              'X-RateLimit-Limit': String(limit),
+              'X-RateLimit-Remaining': String(remaining),
+              'X-RateLimit-Reset': String(reset),
+            },
+          },
+        );
+      }
+    } catch {
+      // Fail-open: Redis unavailable — allow request to continue
+      console.warn('[rate-limit] Upstash unavailable, skipping rate limit check');
+    }
+  }
+
   const body = await req.json().catch(() => ({}));
   const url: string = (body.url ?? '').trim();
 
@@ -192,8 +233,6 @@ export async function POST(req: NextRequest) {
   // Initial validation before any network call
   const safety = await isSafeUrl(url);
   if (!safety.ok) return NextResponse.json({ error: safety.reason }, { status: 400 });
-
-  // TODO: add rate limiting here (e.g. by IP) before public launch at scale
 
   let html: string;
   let finalUrl: string;
@@ -227,8 +266,8 @@ export async function POST(req: NextRequest) {
     thirdPartyDomains: thirdParty,
     summary:
       totalTrackers === 0
-        ? 'No common tracking scripts detected in the page HTML.'
-        : `Found ${totalTrackers} tracking pattern${totalTrackers !== 1 ? 's' : ''} in the page HTML.`,
+        ? 'No common tracking scripts were found in the initial HTML scan.'
+        : `Found ${totalTrackers} common tracking pattern${totalTrackers !== 1 ? 's' : ''} in the initial HTML scan.`,
     disclaimer:
       'This checker performs a basic scan of the page HTML for common analytics, ad, and tracking scripts. It may not detect trackers loaded later by JavaScript, after user interaction, or through server-side tracking. NoUploadTools does not store submitted URLs or scan results. Hosting providers may retain standard request logs.',
   });

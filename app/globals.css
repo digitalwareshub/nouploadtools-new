@@ -157,6 +157,10 @@ a {
   .checkbox-grid {
     grid-template-columns: 1fr;
   }
+
+  .tracking-info-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* Mobile nav: hide centered links from main row, show them in second row */

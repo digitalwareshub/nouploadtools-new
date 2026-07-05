@@ -26,7 +26,7 @@ const trackingCheckerSchema = {
   applicationCategory: 'SecurityApplication',
   operatingSystem: 'Any',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  provider: { '@type': 'Organization', name: 'Digiwares', url: 'https://digiwares.xyz' },
+  provider: { '@type': 'Organization', name: 'NoUploadTools', url: 'https://nouploadtools.com' },
 };
 
 export default function TrackingCheckerPage() {
@@ -82,6 +82,59 @@ export default function TrackingCheckerPage() {
             The checker is open source — review how it works on GitHub.
           </a>
         </p>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 16,
+            marginBottom: 32,
+            maxWidth: 640,
+          }}
+          className="tracking-info-grid"
+        >
+          <div
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 8,
+              padding: '14px 16px',
+              fontSize: 13,
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text)' }}>
+              What this checks
+            </div>
+            <ul
+              style={{ margin: 0, padding: '0 0 0 16px', color: 'var(--text-2)', lineHeight: 1.7 }}
+            >
+              <li>Common analytics scripts</li>
+              <li>Ad scripts</li>
+              <li>Tracking pixels</li>
+              <li>Third-party domains in HTML</li>
+            </ul>
+          </div>
+          <div
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 8,
+              padding: '14px 16px',
+              fontSize: 13,
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text)' }}>
+              What it cannot fully detect
+            </div>
+            <ul
+              style={{ margin: 0, padding: '0 0 0 16px', color: 'var(--text-2)', lineHeight: 1.7 }}
+            >
+              <li>Trackers loaded by JavaScript</li>
+              <li>Tracking after user interaction</li>
+              <li>Server-side tracking</li>
+              <li>Fingerprinting in bundled scripts</li>
+            </ul>
+          </div>
+        </div>
         <TrackingCheckerClient />
       </main>
       <Footer />

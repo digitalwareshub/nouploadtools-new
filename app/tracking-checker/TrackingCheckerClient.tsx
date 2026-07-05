@@ -21,7 +21,7 @@ function ScoreMeter({ score }: { score: number }) {
     <div style={{ textAlign: 'center', marginBottom: 24 }}>
       <div style={{ fontSize: 48, fontWeight: 700, color, lineHeight: 1 }}>{score}</div>
       <div style={{ fontSize: 13, color: 'var(--text-3)', marginTop: 4 }}>
-        Privacy score · {label}
+        Basic scan score · {label}
       </div>
       <div
         style={{
@@ -73,8 +73,21 @@ export default function TrackingCheckerClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: val }),
       });
-      const data = await res.json();
-      setResult(data);
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data) {
+        setResult({
+          url: val,
+          score: 0,
+          totalTrackers: 0,
+          trackers: {},
+          thirdPartyDomains: [],
+          summary: '',
+          disclaimer: '',
+          error: data?.error ?? 'Could not scan this URL. Please try another site.',
+        });
+      } else {
+        setResult(data);
+      }
     } catch {
       setResult({
         url: val,
@@ -86,8 +99,9 @@ export default function TrackingCheckerClient() {
         disclaimer: '',
         error: 'Request failed. Please try again.',
       });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
@@ -147,6 +161,12 @@ export default function TrackingCheckerClient() {
             padding: 24,
           }}
         >
+          {result.url && (
+            <p style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 16 }}>
+              Scanned:{' '}
+              <span style={{ color: 'var(--text-2)', wordBreak: 'break-all' }}>{result.url}</span>
+            </p>
+          )}
           {result.error ? (
             <p style={{ fontSize: 14, color: 'var(--red)' }}>{result.error}</p>
           ) : (
