@@ -38,7 +38,7 @@ function ToolCard({ t }: { t: Tool }) {
 
   return (
     <a
-      href={t.url}
+      href={`/go/${t.slug}?source=directory`}
       target="_blank"
       rel="noopener noreferrer"
       style={{
@@ -111,20 +111,25 @@ function ToolCard({ t }: { t: Tool }) {
         >
           {CAT_LABELS[t.category] || t.category}
         </span>
-        <span
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            padding: '2px 7px',
-            borderRadius: 4,
-            background: 'var(--green-bg)',
-            color: 'var(--green)',
-            border: '1px solid var(--green-br)',
-            letterSpacing: '.03em',
-          }}
-        >
-          LISTED ↗
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 10, color: 'var(--text-3)' }}>
+            {t.clickCount === 1 ? '1 click' : `${t.clickCount ?? 0} clicks`}
+          </span>
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 600,
+              padding: '2px 7px',
+              borderRadius: 4,
+              background: 'var(--green-bg)',
+              color: 'var(--green)',
+              border: '1px solid var(--green-br)',
+              letterSpacing: '.03em',
+            }}
+          >
+            LISTED ↗
+          </span>
+        </div>
       </div>
     </a>
   );

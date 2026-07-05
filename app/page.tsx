@@ -363,7 +363,7 @@ export default async function HomePage() {
                 return (
                   <a
                     key={t.id}
-                    href={t.url}
+                    href={`/go/${t.slug}?source=homepage`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -425,6 +425,9 @@ export default async function HomePage() {
                         ))}
                       </div>
                     )}
+                    <div style={{ fontSize: 10, color: 'var(--text-3)' }}>
+                      {t.clickCount === 1 ? '1 click' : `${t.clickCount ?? 0} clicks`}
+                    </div>
                   </a>
                 );
               })}

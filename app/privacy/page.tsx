@@ -80,6 +80,13 @@ export default function PrivacyPage() {
             used only to review and communicate about your submission.
           </P>
           <P>
+            <strong>Tool click counts:</strong> When you click a listed tool, we record which tool
+            was clicked, the time, and which page you clicked from (directory or homepage). We do not
+            store IP addresses, user agents, cookies, fingerprints, session IDs, or any personal
+            identifiers with click records. Click counts are used to understand which listed tools
+            are useful.
+          </P>
+          <P>
             <strong>Server logs:</strong> Our hosting provider (Vercel) may retain server logs for
             security and abuse prevention. We do not control this data.
           </P>

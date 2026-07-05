@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
-import { adminGetAllTools, type AdminTool } from '@/lib/admin-supabase';
+import { adminGetAllTools, adminGetClickStats, type AdminTool } from '@/lib/admin-supabase';
 import {
   loginAction,
   logoutAction,
@@ -402,6 +402,7 @@ export default async function AdminPage({
   }
 
   const tools = await adminGetAllTools();
+  const [clicks] = await Promise.all([adminGetClickStats(tools)]);
   const statusFilter = params.status ?? 'pending';
   const now = new Date().getTime();
 
@@ -468,8 +469,9 @@ export default async function AdminPage({
           </form>
         </div>
 
-        {/* Stats */}
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 28 }}>
+        {/* Tool stats */}
+        <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-3)', letterSpacing: '.07em', textTransform: 'uppercase', marginBottom: 8 }}>Submissions</p>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
           <StatCard label="Total" value={tools.length} />
           <StatCard label="Pending" value={pending.length} accent={pending.length > 0} />
           <StatCard label="Approved" value={approved.length} />
@@ -482,6 +484,54 @@ export default async function AdminPage({
           <StatCard label="No ads" value={tools.filter((t) => t.is_no_ads).length} />
           <StatCard label="Works offline" value={tools.filter((t) => t.is_works_offline).length} />
         </div>
+
+        {/* Click stats */}
+        <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-3)', letterSpacing: '.07em', textTransform: 'uppercase', marginBottom: 8 }}>Clicks</p>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
+          <StatCard label="Total clicks" value={clicks.totalClicks} />
+          <StatCard label="Today" value={clicks.clicksToday} />
+          <StatCard label="Last 7 days" value={clicks.clicksLast7d} />
+        </div>
+        {clicks.mostClickedName && (
+          <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 8 }}>
+            Most clicked: <strong style={{ color: 'var(--text)' }}>{clicks.mostClickedName}</strong>
+          </p>
+        )}
+
+        {/* Top clicked tools table */}
+        {clicks.topTools.length > 0 && (
+          <div style={{ marginBottom: 28, border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden', background: 'var(--bg-card)' }}>
+            <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', fontSize: 12, fontWeight: 700, color: 'var(--text-3)' }}>
+              Top clicked tools
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                    {['Tool', 'Status', 'Total', 'Last 7d', 'Last clicked'].map((h) => (
+                      <th key={h} style={{ padding: '8px 12px', textAlign: 'left', color: 'var(--text-3)', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {clicks.topTools.map((ct) => (
+                    <tr key={ct.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                      <td style={{ padding: '8px 12px', color: 'var(--text)' }}>
+                        <a href={ct.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>{ct.name} ↗</a>
+                      </td>
+                      <td style={{ padding: '8px 12px', color: 'var(--text-3)' }}>{ct.status}</td>
+                      <td style={{ padding: '8px 12px', fontWeight: 600 }}>{ct.totalClicks}</td>
+                      <td style={{ padding: '8px 12px', color: 'var(--text-2)' }}>{ct.clicksLast7d}</td>
+                      <td style={{ padding: '8px 12px', color: 'var(--text-3)', whiteSpace: 'nowrap' }}>
+                        {ct.lastClickedAt ? new Date(ct.lastClickedAt).toLocaleString() : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Filters */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
