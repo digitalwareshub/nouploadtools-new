@@ -8,6 +8,7 @@ import {
   rejectAction,
   pendingAction,
   deleteAction,
+  submitSitemapToIndexNow,
 } from './actions';
 
 export const metadata: Metadata = {
@@ -135,6 +136,7 @@ function ToolRow({ tool, now }: { tool: AdminTool; now: number }) {
           {tool.status !== 'approved' && (
             <form action={approveAction} style={{ display: 'inline' }}>
               <input type="hidden" name="id" value={tool.id} />
+              <input type="hidden" name="slug" value={tool.slug} />
               <button
                 type="submit"
                 style={{
@@ -450,23 +452,43 @@ export default async function AdminPage({
               NoUploadTools · Private
             </p>
           </div>
-          <form action={logoutAction}>
-            <button
-              type="submit"
-              style={{
-                fontSize: 12,
-                padding: '6px 14px',
-                borderRadius: 6,
-                border: '1px solid var(--border)',
-                background: 'var(--bg-card)',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                color: 'var(--text-2)',
-              }}
-            >
-              Sign out
-            </button>
-          </form>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <form action={submitSitemapToIndexNow}>
+              <button
+                type="submit"
+                style={{
+                  fontSize: 12,
+                  padding: '6px 14px',
+                  borderRadius: 6,
+                  border: '1px solid var(--accent-br)',
+                  background: 'var(--accent-bg)',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  color: 'var(--accent)',
+                  fontWeight: 600,
+                }}
+              >
+                Submit sitemap to IndexNow
+              </button>
+            </form>
+            <form action={logoutAction}>
+              <button
+                type="submit"
+                style={{
+                  fontSize: 12,
+                  padding: '6px 14px',
+                  borderRadius: 6,
+                  border: '1px solid var(--border)',
+                  background: 'var(--bg-card)',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  color: 'var(--text-2)',
+                }}
+              >
+                Sign out
+              </button>
+            </form>
+          </div>
         </div>
 
         {/* Tool stats */}

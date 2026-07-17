@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { isAdminAuthenticated, setAdminCookie, clearAdminCookie } from '@/lib/admin-auth';
 import { adminSetStatus, adminDeleteTool } from '@/lib/admin-supabase';
+import { submitToIndexNow, sitemapUrls } from '@/lib/indexnow';
 
 export async function loginAction(formData: FormData) {
   const password = (formData.get('password') as string) ?? '';
@@ -21,8 +22,20 @@ export async function logoutAction() {
 export async function approveAction(formData: FormData) {
   if (!(await isAdminAuthenticated())) redirect('/admin');
   const id = formData.get('id') as string;
+  const slug = formData.get('slug') as string | null;
   await adminSetStatus(id, 'approved');
+  if (slug) {
+    submitToIndexNow([
+      'https://nouploadtools.com/directory',
+      'https://nouploadtools.com/',
+    ]).catch(() => {});
+  }
   redirect('/admin?status=pending');
+}
+
+export async function submitSitemapToIndexNow() {
+  if (!(await isAdminAuthenticated())) redirect('/admin');
+  await submitToIndexNow(sitemapUrls());
 }
 
 export async function rejectAction(formData: FormData) {
