@@ -12,12 +12,13 @@ export function generateStaticParams() {
   return blogPosts.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
-}): Metadata {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = blogPosts.find((p) => p.slug === slug);
   if (!post) return {};
   return {
     title: `${post.title} — NoUploadTools`,
@@ -85,8 +86,9 @@ function renderContent(content: BlogPost['content']) {
   });
 }
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = blogPosts.find((p) => p.slug === params.slug);
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = blogPosts.find((p) => p.slug === slug);
   if (!post) notFound();
 
   const schema = {
@@ -115,7 +117,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           { label: post.title, href: `/blog/${post.slug}` },
         ]}
       />
-      <main style={{ maxWidth: 720, margin: '0 auto', padding: '32px 24px 80px' }}>
+      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 80px' }}>
         <div
           style={{
             fontSize: 11,

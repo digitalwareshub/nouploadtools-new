@@ -24,8 +24,7 @@ const SECTIONS = [
   {
     title: 'Company',
     links: [
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms', href: '/terms' },
+      { label: 'Blog', href: '/blog' },
       { label: 'Contact', href: '/contact' },
       { label: 'How We Review', href: '/how-we-review' },
       {
@@ -172,6 +171,11 @@ export default function Footer() {
             </a>{' '}
             product
           </span>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <Link href="/blog" style={{ color: 'var(--text-3)' }}>Blog</Link>
+            <Link href="/privacy" style={{ color: 'var(--text-3)' }}>Privacy Policy</Link>
+            <Link href="/terms" style={{ color: 'var(--text-3)' }}>Terms</Link>
+          </div>
           <span>Made in Bangkok 🇹🇭</span>
         </div>
       </div>
