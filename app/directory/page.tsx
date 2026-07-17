@@ -18,8 +18,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function DirectoryPage() {
+const VALID_CATS = new Set([
+  'documents',
+  'images',
+  'text-writing',
+  'audio-video',
+  'security-privacy',
+  'learning',
+  'calculators-data',
+  'developer-tools',
+]);
+
+export default async function DirectoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
   const tools = await getApprovedTools();
+  const sp = await searchParams;
+  const initialCat = VALID_CATS.has(sp.cat) ? sp.cat : 'all';
+  const initialQ = sp.q ?? '';
 
   const itemListSchema = {
     '@context': 'https://schema.org',
@@ -61,7 +79,7 @@ export default async function DirectoryPage() {
             {tools.length} listed tools · browser-based · privacy-first
           </p>
         </header>
-        <DirectoryClient tools={tools} />
+        <DirectoryClient tools={tools} initialCat={initialCat} initialQ={initialQ} />
       </main>
       <Footer />
     </>

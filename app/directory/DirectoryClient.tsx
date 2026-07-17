@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import type { Tool } from '@/lib/supabase';
 
 const CAT_LABELS: Record<string, string> = {
@@ -166,10 +167,31 @@ function Badge({ label, cls }: { label: string; cls: 'orange' | 'green' | 'gray'
   );
 }
 
-export default function DirectoryClient({ tools }: { tools: Tool[] }) {
-  const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState('all');
+export default function DirectoryClient({
+  tools,
+  initialCat = 'all',
+  initialQ = '',
+}: {
+  tools: Tool[];
+  initialCat?: string;
+  initialQ?: string;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [search, setSearch] = useState(initialQ);
+  const [activeCategory, setActiveCategory] = useState(initialCat);
   const [activeFeatures, setActiveFeatures] = useState<Set<FeatureKey>>(new Set());
+
+  const syncUrl = useCallback(
+    (cat: string, q: string) => {
+      const params = new URLSearchParams();
+      if (cat !== 'all') params.set('cat', cat);
+      if (q) params.set('q', q);
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [router, pathname],
+  );
 
   const filtered = useMemo(() => {
     return tools.filter((t) => {
@@ -187,6 +209,16 @@ export default function DirectoryClient({ tools }: { tools: Tool[] }) {
       return true;
     });
   }, [tools, activeCategory, activeFeatures, search]);
+
+  function handleSearch(q: string) {
+    setSearch(q);
+    syncUrl(activeCategory, q);
+  }
+
+  function handleCategory(cat: string) {
+    setActiveCategory(cat);
+    syncUrl(cat, search);
+  }
 
   function toggleFeature(f: FeatureKey) {
     setActiveFeatures((prev) => {
@@ -233,7 +265,7 @@ export default function DirectoryClient({ tools }: { tools: Tool[] }) {
             type="search"
             placeholder="Search — e.g. compress PDF, resize image…"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             style={{
               width: '100%',
               padding: '9px 12px 9px 34px',
@@ -253,7 +285,7 @@ export default function DirectoryClient({ tools }: { tools: Tool[] }) {
           {[['all', 'All tools'], ...Object.entries(CAT_LABELS)].map(([key, label]) => (
             <button
               key={key}
-              onClick={() => setActiveCategory(key)}
+              onClick={() => handleCategory(key)}
               style={{
                 padding: '5px 14px',
                 borderRadius: 100,
