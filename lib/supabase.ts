@@ -31,16 +31,28 @@ export interface Tool {
 }
 
 export async function getApprovedTools(): Promise<Tool[]> {
-  const [toolsRes, clickCounts] = await Promise.all([
-    fetch(`${SUPABASE_URL}/rest/v1/tools?status=eq.approved&order=approved_at.desc`, {
-      headers: {
-        apikey: SUPABASE_ANON,
-        Authorization: `Bearer ${SUPABASE_ANON}`,
-      },
-      next: { revalidate: 300 },
-    }),
-    getToolClickCounts(),
-  ]);
+  let toolsRes: Response;
+  let clickCounts: Map<string, number>;
+
+  try {
+    [toolsRes, clickCounts] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/tools?status=eq.approved&order=approved_at.desc`, {
+        headers: {
+          apikey: SUPABASE_ANON,
+          Authorization: `Bearer ${SUPABASE_ANON}`,
+        },
+        next: { revalidate: 300 },
+      }),
+      getToolClickCounts(),
+    ]);
+  } catch (error) {
+    console.error('[supabase] getApprovedTools request failed', {
+      error,
+      hasUrl: Boolean(SUPABASE_URL),
+      hasKey: Boolean(SUPABASE_ANON),
+    });
+    return [];
+  }
 
   if (!toolsRes.ok) {
     const body = await toolsRes.text().catch(() => '');
@@ -61,16 +73,21 @@ export async function getApprovedTools(): Promise<Tool[]> {
 // Returns a map of tool_id → click count. Uses service role — server-side only.
 export async function getToolClickCounts(): Promise<Map<string, number>> {
   if (!SERVICE_ROLE_KEY) return new Map();
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/tool_clicks?select=tool_id&limit=10000`,
-    {
-      headers: {
-        apikey: SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+  let res: Response;
+  try {
+    res = await fetch(
+      `${SUPABASE_URL}/rest/v1/tool_clicks?select=tool_id&limit=10000`,
+      {
+        headers: {
+          apikey: SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+        },
+        next: { revalidate: 300 },
       },
-      next: { revalidate: 300 },
-    },
-  );
+    );
+  } catch {
+    return new Map();
+  }
   if (!res.ok) return new Map();
   const rows: { tool_id: string }[] = await res.json();
   const counts = new Map<string, number>();

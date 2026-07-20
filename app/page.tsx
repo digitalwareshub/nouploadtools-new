@@ -449,20 +449,20 @@ export default async function HomePage() {
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
               {[
-                { slug: 'documents', icon: '📄', label: 'Documents', desc: 'PDF tools, converters, editors' },
-                { slug: 'images', icon: '🖼️', label: 'Images', desc: 'Compress, resize, convert images' },
-                { slug: 'security-privacy', icon: '🔐', label: 'Security & Privacy', desc: 'Encryption, passwords, hashing' },
-                { slug: 'developer-tools', icon: '💻', label: 'Developer Tools', desc: 'Formatters, encoders, utilities' },
-                { slug: 'text-writing', icon: '✍️', label: 'Text & Writing', desc: 'Editors, formatters, converters' },
-                { slug: 'audio-video', icon: '🎵', label: 'Audio & Video', desc: 'Trim, convert, compress media' },
-                { slug: 'calculators-data', icon: '🧮', label: 'Calculators & Data', desc: 'Math, finance, data tools' },
-                { slug: 'learning', icon: '📚', label: 'Learning', desc: 'Study aids and reference tools' },
+                { slug: 'documents', href: '/no-upload-pdf-tools', icon: '📄', label: 'Documents', desc: 'PDF tools, converters, editors' },
+                { slug: 'images', href: '/privacy-first-image-tools', icon: '🖼️', label: 'Images', desc: 'Compress, resize, convert images' },
+                { slug: 'security-privacy', href: '/directory?cat=security-privacy', icon: '🔐', label: 'Security & Privacy', desc: 'Encryption, passwords, hashing' },
+                { slug: 'developer-tools', href: '/client-side-developer-tools', icon: '💻', label: 'Developer Tools', desc: 'Formatters, encoders, utilities' },
+                { slug: 'text-writing', href: '/directory?cat=text-writing', icon: '✍️', label: 'Text & Writing', desc: 'Editors, formatters, converters' },
+                { slug: 'audio-video', href: '/directory?cat=audio-video', icon: '🎵', label: 'Audio & Video', desc: 'Trim, convert, compress media' },
+                { slug: 'calculators-data', href: '/directory?cat=calculators-data', icon: '🧮', label: 'Calculators & Data', desc: 'Math, finance, data tools' },
+                { slug: 'learning', href: '/directory?cat=learning', icon: '📚', label: 'Learning', desc: 'Study aids and reference tools' },
               ].map((cat) => {
                 const count = tools.filter((t) => t.category === cat.slug).length;
                 return (
                   <Link
                     key={cat.slug}
-                    href={`/directory?cat=${cat.slug}`}
+                    href={cat.href}
                     style={{
                       display: 'flex',
                       flexDirection: 'column',

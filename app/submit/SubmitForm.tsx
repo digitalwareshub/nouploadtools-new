@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Link from 'next/link';
 import { submitTool } from '@/lib/supabase';
 
 const CATEGORIES = [
@@ -136,7 +137,7 @@ export default function SubmitForm() {
           Thanks! We&apos;ll review your tool and email you at <strong>{successEmail}</strong> when
           it goes live. Usually 1–3 days.
         </p>
-        <a
+        <Link
           href="/directory"
           style={{
             display: 'inline-flex',
@@ -152,7 +153,7 @@ export default function SubmitForm() {
           }}
         >
           ← Browse the directory
-        </a>
+        </Link>
       </div>
     );
   }

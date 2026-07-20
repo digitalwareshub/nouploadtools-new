@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
-
-const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://nouploadtools.com'),
@@ -50,6 +47,11 @@ const websiteSchema = {
   url: 'https://nouploadtools.com',
   description:
     'A curated directory of privacy-first browser tools that avoid unnecessary uploads, logins, ads, and tracking.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: 'https://nouploadtools.com/directory?q={search_term_string}',
+    'query-input': 'required name=search_term_string',
+  },
 };
 
 const organizationSchema = {
@@ -87,7 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </>
         )}
       </head>
-      <body className={inter.className}>
+      <body>
         {children}
         {process.env.NODE_ENV === 'production' && (
           <script defer src="/_vercel/insights/script.js" />

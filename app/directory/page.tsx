@@ -39,27 +39,30 @@ export default async function DirectoryPage({
   const initialCat = VALID_CATS.has(sp.cat) ? sp.cat : 'all';
   const initialQ = sp.q ?? '';
 
-  const itemListSchema = {
+  const collectionSchema = {
     '@context': 'https://schema.org',
-    '@type': 'ItemList',
+    '@type': 'CollectionPage',
     name: 'NoUploadTools Directory',
     description: 'Curated list of privacy-first browser-based tools.',
     url: 'https://nouploadtools.com/directory',
-    numberOfItems: tools.length,
-    itemListElement: tools.slice(0, 20).map((t, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: t.name,
-      description: t.tagline,
-      url: t.url,
-    })),
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: tools.length,
+      itemListElement: tools.slice(0, 20).map((t, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: t.name,
+        description: t.tagline,
+        url: t.url,
+      })),
+    },
   };
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
       />
       <Nav />
       <Breadcrumbs items={[{ label: 'Directory', href: '/directory' }]} />

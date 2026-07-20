@@ -1,11 +1,17 @@
 import type { MetadataRoute } from 'next';
 import { blogPosts } from '@/lib/blog';
+import { seoLandings } from '@/lib/seo-landings';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://nouploadtools.com';
   return [
     { url: `${base}/`, changeFrequency: 'daily', priority: 1.0 },
     { url: `${base}/directory`, changeFrequency: 'daily', priority: 0.9 },
+    ...seoLandings.map((landing) => ({
+      url: `${base}/${landing.slug}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+    })),
     { url: `${base}/blog`, changeFrequency: 'weekly', priority: 0.8 },
     ...blogPosts.map((p) => ({
       url: `${base}/blog/${p.slug}`,

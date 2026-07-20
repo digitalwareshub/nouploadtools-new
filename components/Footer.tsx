@@ -14,12 +14,12 @@ const SECTIONS = [
     ],
   },
   {
-    title: 'Categories',
+    title: 'Guides',
     links: [
-      { label: 'Documents', href: '/directory?cat=documents' },
-      { label: 'Images', href: '/directory?cat=images' },
-      { label: 'Security', href: '/directory?cat=security-privacy' },
-      { label: 'Developer', href: '/directory?cat=developer-tools' },
+      { label: 'No-upload PDF tools', href: '/no-upload-pdf-tools' },
+      { label: 'Image privacy tools', href: '/privacy-first-image-tools' },
+      { label: 'Developer tools', href: '/client-side-developer-tools' },
+      { label: 'Offline browser tools', href: '/offline-browser-tools' },
     ],
   },
   {

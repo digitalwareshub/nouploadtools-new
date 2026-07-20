@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -106,9 +107,9 @@ export default function SubmitPage() {
               }}
             >
               <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 10 }}>
-                <a href="/how-we-review" style={{ color: 'inherit' }}>
+                <Link href="/how-we-review" style={{ color: 'inherit' }}>
                   How we review ↗
-                </a>
+                </Link>
               </h3>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {[

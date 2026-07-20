@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -206,9 +207,9 @@ export default function HowWeReviewPage() {
 
           <p style={{ fontSize: 13, color: 'var(--text-3)', lineHeight: 1.65, marginTop: 24 }}>
             Think a listed tool doesn&apos;t belong here, or want to flag an issue?{' '}
-            <a href="/contact" style={{ color: 'var(--accent)' }}>
+            <Link href="/contact" style={{ color: 'var(--accent)' }}>
               Contact us
-            </a>
+            </Link>
             .
           </p>
         </div>
