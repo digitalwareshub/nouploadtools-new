@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const SECTIONS = [
   {
@@ -137,7 +138,8 @@ export default function Footer() {
         <div className="footer-grid">
           {/* Brand */}
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em' }}>
+              <Image src="/favicon-32x32.png" alt="" width={20} height={20} style={{ borderRadius: 4 }} />
               No<span style={{ color: 'var(--accent)' }}>Upload</span>Tools
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>

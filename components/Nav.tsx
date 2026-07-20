@@ -1,7 +1,10 @@
 import Link from 'next/link';
+import Image from 'next/image';
+import SubmissionBanner from './SubmissionBanner';
 
 export default function Nav() {
   return (
+    <>
     <nav
       style={{
         position: 'sticky',
@@ -28,6 +31,9 @@ export default function Nav() {
         <Link
           href="/"
           style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
             fontSize: 15,
             fontWeight: 700,
             color: 'var(--text)',
@@ -36,6 +42,7 @@ export default function Nav() {
             flexShrink: 0,
           }}
         >
+          <Image src="/favicon-32x32.png" alt="" width={22} height={22} style={{ borderRadius: 4 }} />
           No<span style={{ color: 'var(--accent)' }}>Upload</span>Tools
         </Link>
 
@@ -91,5 +98,7 @@ export default function Nav() {
         </Link>
       </div>
     </nav>
+    <SubmissionBanner />
+    </>
   );
 }

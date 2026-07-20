@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import { getApprovedTools } from '@/lib/supabase';
+import { blogPosts } from '@/lib/blog';
 
 export const metadata: Metadata = {
   title: "NoUploadTools — Privacy-First Web Tools That Don't Upload Your Files",
@@ -320,7 +321,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* EXAMPLES FROM DIRECTORY */}
+        {/* MOST CLICKED */}
         <section style={{ borderTop: '1px solid var(--border)', padding: '52px 24px' }}>
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <h2
@@ -331,10 +332,10 @@ export default async function HomePage() {
                 marginBottom: 6,
               }}
             >
-              Examples from the directory
+              Most popular tools
             </h2>
             <p style={{ fontSize: 14, color: 'var(--text-2)', marginBottom: 24 }}>
-              A few privacy-first tools already listed on NoUploadTools.
+              The most-clicked privacy-first tools on NoUploadTools right now.
             </p>
             <div
               style={{
@@ -344,99 +345,260 @@ export default async function HomePage() {
                 marginBottom: 24,
               }}
             >
-              {tools.slice(0, 6).map((t) => {
-                const dm = (() => {
-                  try {
-                    return new URL(t.url).hostname.replace('www.', '');
-                  } catch {
-                    return t.url;
-                  }
-                })();
-                const badges = [
-                  t.is_no_upload && 'No upload',
-                  t.is_open_source && 'Open source',
-                  t.is_zero_login && 'No login',
-                  t.is_no_ads && 'No ads',
-                ]
-                  .filter(Boolean)
-                  .slice(0, 3) as string[];
-                return (
-                  <a
-                    key={t.id}
-                    href={`/go/${t.slug}?source=homepage`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 8,
-                      padding: 16,
-                      border: '1px solid var(--border)',
-                      borderRadius: 10,
-                      background: 'var(--bg-card)',
-                      textDecoration: 'none',
-                      color: 'inherit',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={
-                          t.favicon_url || `https://www.google.com/s2/favicons?domain=${dm}&sz=32`
-                        }
-                        alt=""
-                        width={24}
-                        height={24}
-                        style={{ borderRadius: 4, flexShrink: 0 }}
-                      />
-                      <div>
-                        <div style={{ fontSize: 13, fontWeight: 600 }}>{t.name}</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-3)' }}>{dm}</div>
-                      </div>
-                    </div>
-                    <p
+              {[...tools]
+                .sort((a, b) => (b.clickCount ?? 0) - (a.clickCount ?? 0))
+                .slice(0, 6)
+                .map((t) => {
+                  const dm = (() => {
+                    try {
+                      return new URL(t.url).hostname.replace('www.', '');
+                    } catch {
+                      return t.url;
+                    }
+                  })();
+                  const badges = [
+                    t.is_no_upload && 'No upload',
+                    t.is_open_source && 'Open source',
+                    t.is_zero_login && 'No login',
+                    t.is_no_ads && 'No ads',
+                  ]
+                    .filter(Boolean)
+                    .slice(0, 3) as string[];
+                  return (
+                    <a
+                      key={t.id}
+                      href={`/go/${t.slug}?source=homepage`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{
-                        fontSize: 12,
-                        color: 'var(--text-2)',
-                        lineHeight: 1.5,
-                        margin: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 8,
+                        padding: 16,
+                        border: '1px solid var(--border)',
+                        borderRadius: 10,
+                        background: 'var(--bg-card)',
+                        textDecoration: 'none',
+                        color: 'inherit',
                       }}
                     >
-                      {t.tagline}
-                    </p>
-                    {badges.length > 0 && (
-                      <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                        {badges.map((b) => (
-                          <span
-                            key={b}
-                            style={{
-                              fontSize: 10,
-                              fontWeight: 600,
-                              padding: '2px 7px',
-                              borderRadius: 4,
-                              background: 'var(--accent-bg)',
-                              color: 'var(--accent)',
-                              border: '1px solid var(--accent-br)',
-                              letterSpacing: '.03em',
-                            }}
-                          >
-                            {b.toUpperCase()}
-                          </span>
-                        ))}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={
+                            t.favicon_url || `https://www.google.com/s2/favicons?domain=${dm}&sz=32`
+                          }
+                          alt=""
+                          width={24}
+                          height={24}
+                          style={{ borderRadius: 4, flexShrink: 0 }}
+                        />
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 600 }}>{t.name}</div>
+                          <div style={{ fontSize: 11, color: 'var(--text-3)' }}>{dm}</div>
+                        </div>
                       </div>
-                    )}
-                    <div style={{ fontSize: 10, color: 'var(--text-3)' }}>
-                      {t.clickCount === 1 ? '1 click' : `${t.clickCount ?? 0} clicks`}
-                    </div>
-                  </a>
-                );
-              })}
+                      <p style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5, margin: 0 }}>
+                        {t.tagline}
+                      </p>
+                      {badges.length > 0 && (
+                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                          {badges.map((b) => (
+                            <span
+                              key={b}
+                              style={{
+                                fontSize: 10,
+                                fontWeight: 600,
+                                padding: '2px 7px',
+                                borderRadius: 4,
+                                background: 'var(--accent-bg)',
+                                color: 'var(--accent)',
+                                border: '1px solid var(--accent-br)',
+                                letterSpacing: '.03em',
+                              }}
+                            >
+                              {b.toUpperCase()}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 10, color: 'var(--text-3)' }}>
+                        {t.clickCount === 1 ? '1 click' : `${t.clickCount ?? 0} clicks`}
+                      </div>
+                    </a>
+                  );
+                })}
             </div>
             <Link
               href="/directory"
               style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}
             >
               View full directory →
+            </Link>
+          </div>
+        </section>
+
+        {/* CATEGORIES */}
+        <section style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-card)', padding: '52px 24px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+            <h2 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)', fontWeight: 700, letterSpacing: '-0.03em', marginBottom: 6 }}>
+              Browse by category
+            </h2>
+            <p style={{ fontSize: 14, color: 'var(--text-2)', marginBottom: 24 }}>
+              Find privacy-first tools for whatever you need to get done.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+              {[
+                { slug: 'documents', icon: '📄', label: 'Documents', desc: 'PDF tools, converters, editors' },
+                { slug: 'images', icon: '🖼️', label: 'Images', desc: 'Compress, resize, convert images' },
+                { slug: 'security-privacy', icon: '🔐', label: 'Security & Privacy', desc: 'Encryption, passwords, hashing' },
+                { slug: 'developer-tools', icon: '💻', label: 'Developer Tools', desc: 'Formatters, encoders, utilities' },
+                { slug: 'text-writing', icon: '✍️', label: 'Text & Writing', desc: 'Editors, formatters, converters' },
+                { slug: 'audio-video', icon: '🎵', label: 'Audio & Video', desc: 'Trim, convert, compress media' },
+                { slug: 'calculators-data', icon: '🧮', label: 'Calculators & Data', desc: 'Math, finance, data tools' },
+                { slug: 'learning', icon: '📚', label: 'Learning', desc: 'Study aids and reference tools' },
+              ].map((cat) => {
+                const count = tools.filter((t) => t.category === cat.slug).length;
+                return (
+                  <Link
+                    key={cat.slug}
+                    href={`/directory?cat=${cat.slug}`}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 6,
+                      padding: 16,
+                      border: '1px solid var(--border)',
+                      borderRadius: 10,
+                      background: 'var(--bg)',
+                      textDecoration: 'none',
+                      color: 'inherit',
+                    }}
+                  >
+                    <div style={{ fontSize: 24 }}>{cat.icon}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600 }}>{cat.label}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.4 }}>{cat.desc}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
+                      {count} {count === 1 ? 'tool' : 'tools'}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* RECENTLY ADDED */}
+        <section style={{ borderTop: '1px solid var(--border)', padding: '52px 24px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+            <h2 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)', fontWeight: 700, letterSpacing: '-0.03em', marginBottom: 6 }}>
+              Recently added
+            </h2>
+            <p style={{ fontSize: 14, color: 'var(--text-2)', marginBottom: 24 }}>
+              The latest tools reviewed and listed on NoUploadTools.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12, marginBottom: 24 }}>
+              {[...tools]
+                .sort((a, b) => new Date(b.approved_at ?? b.submitted_at).getTime() - new Date(a.approved_at ?? a.submitted_at).getTime())
+                .slice(0, 3)
+                .map((t) => {
+                  const dm = (() => { try { return new URL(t.url).hostname.replace('www.', ''); } catch { return t.url; } })();
+                  const badges = [t.is_no_upload && 'No upload', t.is_open_source && 'Open source', t.is_zero_login && 'No login', t.is_no_ads && 'No ads'].filter(Boolean).slice(0, 3) as string[];
+                  return (
+                    <a
+                      key={t.id}
+                      href={`/go/${t.slug}?source=homepage`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 16, border: '1px solid var(--border)', borderRadius: 10, background: 'var(--bg-card)', textDecoration: 'none', color: 'inherit' }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={t.favicon_url || `https://www.google.com/s2/favicons?domain=${dm}&sz=32`} alt="" width={24} height={24} style={{ borderRadius: 4, flexShrink: 0 }} />
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 600 }}>{t.name}</div>
+                          <div style={{ fontSize: 11, color: 'var(--text-3)' }}>{dm}</div>
+                        </div>
+                      </div>
+                      <p style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5, margin: 0 }}>{t.tagline}</p>
+                      {badges.length > 0 && (
+                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                          {badges.map((b) => (
+                            <span key={b} style={{ fontSize: 10, fontWeight: 600, padding: '2px 7px', borderRadius: 4, background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--accent-br)', letterSpacing: '.03em' }}>
+                              {b.toUpperCase()}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 10, color: 'var(--text-3)' }}>
+                        Added {new Date(t.approved_at ?? t.submitted_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </div>
+                    </a>
+                  );
+                })}
+            </div>
+            <Link href="/directory" style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>
+              View full directory →
+            </Link>
+          </div>
+        </section>
+
+        {/* SUBMIT CTA */}
+        <section style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-card)', padding: '52px 24px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 12 }}>
+            <h2 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)', fontWeight: 700, letterSpacing: '-0.03em', marginBottom: 0 }}>
+              Get your tool in front of privacy-conscious users
+            </h2>
+            <p style={{ fontSize: 15, color: 'var(--text-2)', maxWidth: 580, lineHeight: 1.65, margin: 0 }}>
+              NoUploadTools is where people come to find tools they can trust. If yours respects user privacy — no forced uploads, no unnecessary tracking, no hidden data collection — submit it for review.
+            </p>
+            <Link
+              href="/submit"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'var(--accent)',
+                color: '#fff',
+                padding: '10px 22px',
+                borderRadius: 'var(--radius)',
+                fontSize: 14,
+                fontWeight: 600,
+                marginTop: 4,
+              }}
+            >
+              Submit your tool →
+            </Link>
+          </div>
+        </section>
+
+        {/* BLOG */}
+        <section style={{ borderTop: '1px solid var(--border)', background: 'var(--bg)', padding: '52px 24px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+            <h2 style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)', fontWeight: 700, letterSpacing: '-0.03em', marginBottom: 6 }}>
+              From the blog
+            </h2>
+            <p style={{ fontSize: 14, color: 'var(--text-2)', marginBottom: 24 }}>
+              Guides on privacy, browser security, and how to verify the tools you use.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12, marginBottom: 24 }}>
+              {blogPosts.slice(0, 3).map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 16, border: '1px solid var(--border)', borderRadius: 10, background: 'var(--bg-card)', textDecoration: 'none', color: 'inherit' }}
+                >
+                  <div style={{ fontSize: 11, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '.06em' }}>
+                    {new Date(post.publishDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.4 }}>{post.title}</div>
+                  <p style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5, margin: 0, flex: 1 }}>{post.description}</p>
+                  <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500 }}>Read article →</span>
+                </Link>
+              ))}
+            </div>
+            <Link href="/blog" style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>
+              View all articles →
             </Link>
           </div>
         </section>
