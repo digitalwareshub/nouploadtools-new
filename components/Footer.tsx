@@ -46,9 +46,7 @@ function FooterSection({
 }: (typeof SECTIONS)[number] & { open: boolean; onToggle: () => void }) {
   return (
     <div className="footer-section">
-      <strong className="footer-heading-desktop">{title}</strong>
-
-      <button className="footer-heading-mobile" onClick={onToggle} aria-expanded={open}>
+      <button className="footer-heading" onClick={onToggle} aria-expanded={open}>
         {title}
         <span className="footer-toggle-icon">{open ? '−' : '+'}</span>
       </button>
@@ -61,12 +59,12 @@ function FooterSection({
               href={l.href}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: 13, color: 'var(--text-2)' }}
+              className="footer-link"
             >
               {l.label}
             </a>
           ) : (
-            <Link key={l.label} href={l.href} style={{ fontSize: 13, color: 'var(--text-2)' }}>
+            <Link key={l.label} href={l.href} className="footer-link">
               {l.label}
             </Link>
           ),
@@ -92,27 +90,8 @@ function ScrollToTop() {
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       aria-label="Back to top"
-      style={{
-        position: 'fixed',
-        bottom: 24,
-        right: 24,
-        zIndex: 200,
-        width: 40,
-        height: 40,
-        borderRadius: '50%',
-        border: '1px solid var(--border)',
-        background: 'var(--bg-card)',
-        color: 'var(--text-2)',
-        cursor: 'pointer',
-        fontSize: 16,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        opacity: visible ? 1 : 0,
-        pointerEvents: visible ? 'auto' : 'none',
-        transition: 'opacity 0.25s ease',
-      }}
+      className="scroll-top"
+      style={{ opacity: visible ? 1 : 0, pointerEvents: visible ? 'auto' : 'none' }}
     >
       ↑
     </button>
@@ -127,58 +106,75 @@ export default function Footer() {
   }
 
   return (
-    <footer
-      style={{
-        borderTop: '1px solid var(--border)',
-        background: 'var(--bg-card)',
-        padding: '32px 24px',
-      }}
-    >
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+    <footer className="site-footer">
+      <div className="footer-bg-word footer-bg-word-one">PDF</div>
+      <div className="footer-bg-word footer-bg-word-two">JSON</div>
+      <div className="footer-bg-word footer-bg-word-three">EXIF</div>
+      <div className="footer-shell">
         <div className="footer-grid">
-          {/* Brand */}
-          <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em' }}>
-              <Image src="/favicon-32x32.png" alt="" width={20} height={20} style={{ borderRadius: 4 }} />
-              No<span style={{ color: 'var(--accent)' }}>Upload</span>Tools
+          <div className="footer-brand">
+            <div className="footer-logo-row">
+              <Image
+                src="/favicon-32x32.png"
+                alt=""
+                width={24}
+                height={24}
+                className="footer-logo"
+              />
+              <span>
+                No<span className="footer-logo-accent">Upload</span>Tools
+              </span>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>
+            <p className="footer-tagline">
               Privacy-first tools, reviewed before listing.
+            </p>
+            <div className="footer-status">
+              <span />
+              No unnecessary uploads
             </div>
           </div>
 
-          {SECTIONS.map((s, i) => (
-            <FooterSection key={s.title} {...s} open={openIndex === i} onToggle={() => toggle(i)} />
-          ))}
+          <div className="footer-accordion">
+            {SECTIONS.map((s, i) => (
+              <FooterSection
+                key={s.title}
+                {...s}
+                open={openIndex === i}
+                onToggle={() => toggle(i)}
+              />
+            ))}
+          </div>
         </div>
 
-        <div
-          style={{
-            borderTop: '1px solid var(--border)',
-            paddingTop: 20,
-            marginTop: 28,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: 8,
-            fontSize: 12,
-            color: 'var(--text-3)',
-          }}
-        >
+        <div className="footer-explore">
+          <h2>Explore NoUploadTools</h2>
+          <div>
+            <Link href="/no-upload-pdf-tools">No-upload PDF tools</Link>
+            <Link href="/privacy-first-image-tools">Image privacy tools</Link>
+            <Link href="/tracking-checker">Tracking checker</Link>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
           <span>
             © {new Date().getFullYear()} NoUploadTools · A{' '}
-            <a href="https://digiwares.xyz" style={{ color: 'var(--text-2)' }}>
+            <a href="https://digiwares.xyz">
               Digiwares
             </a>{' '}
             product
           </span>
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <Link href="/blog" style={{ color: 'var(--text-3)' }}>Blog</Link>
-            <Link href="/privacy" style={{ color: 'var(--text-3)' }}>Privacy Policy</Link>
-            <Link href="/terms" style={{ color: 'var(--text-3)' }}>Terms</Link>
+          <div>
+            <Link href="/blog">Blog</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
+            <a
+              href="https://github.com/digitalwareshub/nouploadtools-new"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
           </div>
-          <span>Made in Bangkok 🇹🇭</span>
         </div>
       </div>
       <ScrollToTop />
