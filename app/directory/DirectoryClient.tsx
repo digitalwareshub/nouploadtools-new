@@ -58,7 +58,7 @@ function ToolCard({ t }: { t: Tool }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={fav}
-          alt=""
+          alt={`${t.name} logo`}
           width={32}
           height={32}
           style={{

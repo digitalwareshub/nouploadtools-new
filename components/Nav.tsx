@@ -42,7 +42,13 @@ export default function Nav() {
             flexShrink: 0,
           }}
         >
-          <Image src="/favicon-32x32.png" alt="" width={22} height={22} style={{ borderRadius: 4 }} />
+          <Image
+            src="/favicon-32x32.png"
+            alt="NoUploadTools logo"
+            width={22}
+            height={22}
+            style={{ borderRadius: 4 }}
+          />
           No<span style={{ color: 'var(--accent)' }}>Upload</span>Tools
         </Link>
 

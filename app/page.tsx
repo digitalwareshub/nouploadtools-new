@@ -388,7 +388,7 @@ export default async function HomePage() {
                           src={
                             t.favicon_url || `https://www.google.com/s2/favicons?domain=${dm}&sz=32`
                           }
-                          alt=""
+                          alt={`${t.name} logo`}
                           width={24}
                           height={24}
                           style={{ borderRadius: 4, flexShrink: 0 }}
@@ -514,7 +514,15 @@ export default async function HomePage() {
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={t.favicon_url || `https://www.google.com/s2/favicons?domain=${dm}&sz=32`} alt="" width={24} height={24} style={{ borderRadius: 4, flexShrink: 0 }} />
+                        <img
+                          src={
+                            t.favicon_url || `https://www.google.com/s2/favicons?domain=${dm}&sz=32`
+                          }
+                          alt={`${t.name} logo`}
+                          width={24}
+                          height={24}
+                          style={{ borderRadius: 4, flexShrink: 0 }}
+                        />
                         <div>
                           <div style={{ fontSize: 13, fontWeight: 600 }}>{t.name}</div>
                           <div style={{ fontSize: 11, color: 'var(--text-3)' }}>{dm}</div>

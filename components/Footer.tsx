@@ -116,7 +116,7 @@ export default function Footer() {
             <div className="footer-logo-row">
               <Image
                 src="/favicon-32x32.png"
-                alt=""
+                alt="NoUploadTools logo"
                 width={24}
                 height={24}
                 className="footer-logo"

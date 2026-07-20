@@ -2,6 +2,7 @@
 
 ## 2026-07-20
 
+- Added descriptive alt text for site logo images and tool favicon images flagged by SEO checks.
 - Switched the redesigned footer from a dark treatment to a light theme aligned with the rest of the site.
 - Redesigned the footer with a dark brand panel, accordion link groups, guide links, and updated bottom navigation.
 - Updated IndexNow sitemap submissions to include the SEO guide pages from the shared landing-page configuration.
