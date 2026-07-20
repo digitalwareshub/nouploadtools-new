@@ -2,6 +2,7 @@
 
 ## 2026-07-20
 
+- Updated IndexNow sitemap submissions to include the SEO guide pages from the shared landing-page configuration.
 - Added four focused SEO guide pages:
   - `/no-upload-pdf-tools`
   - `/privacy-first-image-tools`

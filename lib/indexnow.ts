@@ -1,3 +1,5 @@
+import { seoLandings } from '@/lib/seo-landings';
+
 const SITE = 'https://nouploadtools.com';
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 
@@ -32,6 +34,7 @@ export function sitemapUrls(): string[] {
   return [
     `${SITE}/`,
     `${SITE}/directory`,
+    ...seoLandings.map((landing) => `${SITE}/${landing.slug}`),
     `${SITE}/blog`,
     `${SITE}/blog/how-to-verify-privacy-first-tools`,
     `${SITE}/blog/how-to-remove-metadata-from-documents`,
