@@ -17,7 +17,6 @@ type TurnstileOptions = {
 
 type TurnstileApi = {
   render: (container: HTMLElement, options: TurnstileOptions) => string;
-  reset: (widgetId?: string) => void;
   remove: (widgetId: string) => void;
 };
 
@@ -31,13 +30,7 @@ export function isTurnstileEnabledInBrowser(): boolean {
   return Boolean(SITE_KEY);
 }
 
-export default function TurnstileWidget({
-  action,
-  resetKey = 0,
-}: {
-  action: string;
-  resetKey?: number;
-}) {
+export default function TurnstileWidget({ action }: { action: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const [token, setToken] = useState('');
@@ -59,12 +52,6 @@ export default function TurnstileWidget({
   useEffect(() => {
     renderWidget();
   }, [renderWidget]);
-
-  useEffect(() => {
-    if (!resetKey || !widgetIdRef.current || !window.turnstile) return;
-    setToken('');
-    window.turnstile.reset(widgetIdRef.current);
-  }, [resetKey]);
 
   useEffect(
     () => () => {
