@@ -4,6 +4,8 @@ import Script from 'next/script';
 import { useCallback, useEffect, useRef } from 'react';
 
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? '';
+const TOKEN_WAIT_TIMEOUT_MS = 5000;
+const TOKEN_POLL_INTERVAL_MS = 100;
 
 type TurnstileOptions = {
   sitekey: string;
@@ -12,7 +14,7 @@ type TurnstileOptions = {
   action?: string;
   callback?: (token: string) => void;
   'expired-callback'?: () => void;
-  'error-callback'?: () => void;
+  'error-callback'?: (errorCode?: string) => void;
 };
 
 type TurnstileApi = {
@@ -56,13 +58,76 @@ export default function TurnstileWidget({
       action,
       callback: (value) => setToken(value),
       'expired-callback': () => setToken(''),
-      'error-callback': () => setToken(''),
+      'error-callback': (errorCode) => {
+        setToken('');
+        if (errorCode) console.warn('[turnstile] Client verification error', errorCode);
+      },
     });
   }, [action, setToken]);
 
   useEffect(() => {
     renderWidget();
   }, [renderWidget]);
+
+  // A user can submit before Turnstile's async callback has populated the token.
+  // Hold the native submit briefly, then replay it once the token is ready.
+  // If verification still has not completed after the timeout, let the form's
+  // existing React handler surface its normal security-verification message.
+  useEffect(() => {
+    if (!SITE_KEY || !containerRef.current) return;
+
+    const form = containerRef.current.closest('form');
+    if (!form) return;
+
+    let waiting = false;
+    let bypassNextSubmit = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const continueSubmit = () => {
+      waiting = false;
+      bypassNextSubmit = true;
+      form.requestSubmit();
+    };
+
+    const handleSubmit = (event: SubmitEvent) => {
+      if (bypassNextSubmit) {
+        bypassNextSubmit = false;
+        return;
+      }
+
+      if (inputRef.current?.value.trim()) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (waiting) return;
+      waiting = true;
+      const startedAt = performance.now();
+
+      const pollForToken = () => {
+        if (inputRef.current?.value.trim()) {
+          continueSubmit();
+          return;
+        }
+
+        if (performance.now() - startedAt >= TOKEN_WAIT_TIMEOUT_MS) {
+          continueSubmit();
+          return;
+        }
+
+        timer = setTimeout(pollForToken, TOKEN_POLL_INTERVAL_MS);
+      };
+
+      pollForToken();
+    };
+
+    form.addEventListener('submit', handleSubmit, true);
+
+    return () => {
+      form.removeEventListener('submit', handleSubmit, true);
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     if (!resetKey || !widgetIdRef.current || !window.turnstile) return;
