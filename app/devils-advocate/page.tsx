@@ -5,12 +5,12 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import WaitlistForm from './WaitlistForm';
 
 export const metadata: Metadata = {
-  title: "Devil's Advocate — Startup & Website Audit",
+  title: "Devil's Advocate - Startup & Website Audit",
   description:
     "Join the waitlist for Devil's Advocate: a skeptical startup and website audit that challenges your idea, checks your positioning and discoverability, and gives a preliminary Delta 4 assessment.",
   alternates: { canonical: 'https://nouploadtools.com/devils-advocate' },
   openGraph: {
-    title: "Devil's Advocate — Should You Keep Building This Startup?",
+    title: "Devil's Advocate - Should You Keep Building This Startup?",
     description:
       'Enter your website. We will challenge the idea, inspect the site, and tell you what looks weak, missing, unclear, or difficult to scale.',
     url: 'https://nouploadtools.com/devils-advocate',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Devil's Advocate — Should You Keep Building This Startup?",
+    title: "Devil's Advocate - Should You Keep Building This Startup?",
     description:
       'A deliberately skeptical startup and website audit. Free first scan, deeper investigation optional.',
   },
@@ -55,7 +55,7 @@ const paidChecks = [
   'Distribution difficulty and pricing power',
   'Scalability, defensibility, and market risk',
   'A deeper Delta 4 assessment',
-  'Keep building, pivot, or stop — with reasons',
+  'Keep building, pivot, or stop - with reasons',
 ];
 
 const faq = [
@@ -81,7 +81,7 @@ export default function DevilsAdvocatePage() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: "Devil's Advocate — Startup & Website Audit",
+    name: "Devil's Advocate - Startup & Website Audit",
     url: 'https://nouploadtools.com/devils-advocate',
     description:
       'A coming-soon skeptical startup and website audit from NoUploadTools, with a free first scan and optional deeper business investigation.',
@@ -151,7 +151,7 @@ export default function DevilsAdvocatePage() {
               }}
             >
               Enter your website and get an intentionally skeptical audit of the business idea and
-              the site selling it — including a preliminary Delta 4 assessment, positioning,
+              the site selling it - including a preliminary Delta 4 assessment, positioning,
               homepage weaknesses, SEO/AI discoverability, schema, Open Graph, missing pages, and
               the strongest reasons someone may never use your product.
             </p>
