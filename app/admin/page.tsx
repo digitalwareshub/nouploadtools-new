@@ -855,7 +855,7 @@ export default async function AdminPage({
   }
 
   const view = params.view === 'waitlist' ? 'waitlist' : 'tools';
-  const now = Date.now();
+  const now = new Date().getTime();
 
   if (view === 'waitlist') {
     const signups = await adminGetDevilsAdvocateWaitlist();
