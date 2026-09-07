@@ -30,6 +30,11 @@ function text(value: unknown, maxLength: number): string {
   return value.trim().slice(0, maxLength);
 }
 
+function normalizeUrl(value: string): string {
+  if (!value) return '';
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
 function validEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
@@ -56,13 +61,14 @@ export async function POST(request: NextRequest) {
   }
 
   const name = text(body.name, 80);
-  const url = text(body.url, 300);
+  const url = normalizeUrl(text(body.url, 300));
   const tagline = text(body.tagline, 120);
   const description = text(body.description, 300) || null;
   const category = text(body.category, 80);
   const submittedByEmail = text(body.submitted_by_email, 200).toLowerCase();
   const submittedByName = text(body.submitted_by_name, 80) || null;
-  const githubUrl = text(body.github_url, 300) || null;
+  const githubUrlRaw = text(body.github_url, 300);
+  const githubUrl = githubUrlRaw ? normalizeUrl(githubUrlRaw) : null;
 
   const features = Object.fromEntries(
     FEATURE_KEYS.map((key) => [key, body[key] === true]),
