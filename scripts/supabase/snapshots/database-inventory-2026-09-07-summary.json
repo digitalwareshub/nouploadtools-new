@@ -1,0 +1,42 @@
+{
+  "snapshot_date": "2026-09-07",
+  "source": "Supabase SQL inventory export supplied in chat",
+  "notes": [
+    "Snapshot taken immediately before public.devils_advocate_waitlist was created.",
+    "Raw application rows and auth-user records are not included.",
+    "The full structural export is stored as database-inventory-2026-09-07.json.gz."
+  ],
+  "application_public_schema_before_waitlist": {
+    "tables": [
+      {
+        "name": "tools",
+        "rls_enabled": true
+      },
+      {
+        "name": "tool_clicks",
+        "rls_enabled": true
+      }
+    ]
+  },
+  "devils_advocate_waitlist_verification_after_creation": {
+    "rls_enabled": true,
+    "rls_forced": false,
+    "columns": [
+      "id",
+      "email",
+      "website_url",
+      "paid_interest",
+      "source",
+      "created_at",
+      "updated_at"
+    ],
+    "rls_policies": [],
+    "service_role_privileges": [
+      "INSERT",
+      "SELECT",
+      "UPDATE"
+    ],
+    "anon_privileges": [],
+    "authenticated_privileges": []
+  }
+}
