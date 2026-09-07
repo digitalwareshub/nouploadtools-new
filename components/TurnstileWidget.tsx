@@ -1,7 +1,7 @@
 'use client';
 
 import Script from 'next/script';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? '';
 
@@ -17,6 +17,7 @@ type TurnstileOptions = {
 
 type TurnstileApi = {
   render: (container: HTMLElement, options: TurnstileOptions) => string;
+  reset: (widgetId?: string) => void;
   remove: (widgetId: string) => void;
 };
 
@@ -30,10 +31,20 @@ export function isTurnstileEnabledInBrowser(): boolean {
   return Boolean(SITE_KEY);
 }
 
-export default function TurnstileWidget({ action }: { action: string }) {
+export default function TurnstileWidget({
+  action,
+  resetKey = 0,
+}: {
+  action: string;
+  resetKey?: number;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const widgetIdRef = useRef<string | null>(null);
-  const [token, setToken] = useState('');
+
+  const setToken = useCallback((value: string) => {
+    if (inputRef.current) inputRef.current.value = value;
+  }, []);
 
   const renderWidget = useCallback(() => {
     if (!SITE_KEY || !containerRef.current || !window.turnstile || widgetIdRef.current) return;
@@ -47,11 +58,17 @@ export default function TurnstileWidget({ action }: { action: string }) {
       'expired-callback': () => setToken(''),
       'error-callback': () => setToken(''),
     });
-  }, [action]);
+  }, [action, setToken]);
 
   useEffect(() => {
     renderWidget();
   }, [renderWidget]);
+
+  useEffect(() => {
+    if (!resetKey || !widgetIdRef.current || !window.turnstile) return;
+    setToken('');
+    window.turnstile.reset(widgetIdRef.current);
+  }, [resetKey, setToken]);
 
   useEffect(
     () => () => {
@@ -73,7 +90,7 @@ export default function TurnstileWidget({ action }: { action: string }) {
         onReady={renderWidget}
       />
       <div ref={containerRef} style={{ width: '100%' }} />
-      <input type="hidden" name="turnstile_token" value={token} readOnly />
+      <input ref={inputRef} type="hidden" name="turnstile_token" defaultValue="" />
     </>
   );
 }
