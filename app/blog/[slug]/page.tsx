@@ -7,6 +7,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import { blogPosts, type BlogPost } from '@/lib/blog';
 
 const SITE = 'https://nouploadtools.com';
+const SOCIAL_IMAGE = `${SITE}/og-image.png`;
 
 export function generateStaticParams() {
   return blogPosts.map((p) => ({ slug: p.slug }));
@@ -20,10 +21,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = blogPosts.find((p) => p.slug === slug);
   if (!post) return {};
+
   return {
-    title: `${post.title} — NoUploadTools`,
+    title: post.title,
     description: post.description,
-    keywords: post.keywords,
     alternates: { canonical: `${SITE}/blog/${post.slug}` },
     openGraph: {
       title: post.title,
@@ -33,6 +34,20 @@ export async function generateMetadata({
       publishedTime: new Date(post.publishDate).toISOString(),
       modifiedTime: new Date(post.dateModified).toISOString(),
       authors: ['NoUploadTools'],
+      images: [
+        {
+          url: SOCIAL_IMAGE,
+          width: 1200,
+          height: 630,
+          alt: `${post.title} - NoUploadTools`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.description,
+      images: [SOCIAL_IMAGE],
     },
   };
 }
@@ -96,6 +111,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.description,
+    image: SOCIAL_IMAGE,
     url: `${SITE}/blog/${post.slug}`,
     datePublished: new Date(post.publishDate).toISOString(),
     dateModified: new Date(post.dateModified).toISOString(),
@@ -170,7 +186,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           }}
         >
           <p style={{ fontSize: 13, color: 'var(--text-3)' }}>
-            Published by NoUploadTools — a curated directory of browser-based tools that avoid
+            Published by NoUploadTools - a curated directory of browser-based tools that avoid
             unnecessary file uploads.
           </p>
           <Link href="/blog" style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 500 }}>

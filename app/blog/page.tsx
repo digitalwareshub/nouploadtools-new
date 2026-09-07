@@ -1,21 +1,16 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { blogPosts } from '@/lib/blog';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Blog — NoUploadTools',
+export const metadata = buildPageMetadata({
+  title: 'Blog',
   description:
     'Articles on privacy-first tools, client-side processing, metadata removal, and protecting your data online.',
-  alternates: { canonical: 'https://nouploadtools.com/blog' },
-  openGraph: {
-    title: 'Blog — NoUploadTools',
-    description: 'Articles on privacy-first tools, client-side processing, and protecting your data.',
-    url: 'https://nouploadtools.com/blog',
-  },
-};
+  path: '/blog',
+});
 
 export default function BlogIndexPage() {
   return (
