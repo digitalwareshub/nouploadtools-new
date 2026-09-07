@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { blogPosts } from '@/lib/blog';
+import { blogPosts } from '@/lib/blog-all';
 import { seoLandings } from '@/lib/seo-landings';
 
 const modified = {
