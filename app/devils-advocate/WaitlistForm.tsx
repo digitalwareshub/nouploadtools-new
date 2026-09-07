@@ -1,12 +1,16 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useId, useState } from 'react';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
 export default function WaitlistForm() {
   const [state, setState] = useState<FormState>('idle');
   const [message, setMessage] = useState('');
+  const instanceId = useId().replace(/:/g, '');
+  const emailId = `devils-advocate-email-${instanceId}`;
+  const websiteId = `devils-advocate-website-${instanceId}`;
+  const companyId = `devils-advocate-company-${instanceId}`;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,13 +63,13 @@ export default function WaitlistForm() {
     >
       <div>
         <label
-          htmlFor="email"
+          htmlFor={emailId}
           style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6 }}
         >
           Email address
         </label>
         <input
-          id="email"
+          id={emailId}
           name="email"
           type="email"
           inputMode="email"
@@ -90,13 +94,13 @@ export default function WaitlistForm() {
 
       <div>
         <label
-          htmlFor="website_url"
+          htmlFor={websiteId}
           style={{ display: 'block', fontSize: 12, fontWeight: 700, marginBottom: 6 }}
         >
           Your website <span style={{ color: 'var(--text-3)', fontWeight: 500 }}>(optional)</span>
         </label>
         <input
-          id="website_url"
+          id={websiteId}
           name="website_url"
           type="text"
           inputMode="url"
@@ -138,8 +142,8 @@ export default function WaitlistForm() {
       </label>
 
       <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1 }}>
-        <label htmlFor="company">Company</label>
-        <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+        <label htmlFor={companyId}>Company</label>
+        <input id={companyId} name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
       <button
