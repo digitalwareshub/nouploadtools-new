@@ -3,6 +3,7 @@ import { promises as dns } from 'dns';
 import { isIPv4, isIPv6 } from 'net';
 import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -42,59 +43,54 @@ const TRACKER_PATTERNS: Record<string, string[]> = {
   'Support widgets': ['intercom', 'crisp.chat'],
 };
 
-// Checks whether an IPv4 address falls in a private/reserved range.
 function isPrivateIPv4(ip: string): boolean {
   const parts = ip.split('.').map(Number);
   if (parts.length !== 4 || parts.some((n) => isNaN(n) || n < 0 || n > 255)) return true;
   const [a, b, c] = parts;
   return (
-    a === 0 || // 0.0.0.0/8
-    a === 10 || // 10.0.0.0/8
-    a === 127 || // 127.0.0.0/8 loopback
-    (a === 169 && b === 254) || // 169.254.0.0/16 link-local
-    (a === 172 && b >= 16 && b <= 31) || // 172.16.0.0/12
-    (a === 192 && b === 168) || // 192.168.0.0/16
-    (a === 198 && (b === 18 || b === 19)) || // 198.18.0.0/15 benchmarking
-    (a === 100 && b >= 64 && b <= 127) || // 100.64.0.0/10 shared address space
-    a >= 224 // multicast and reserved
+    a === 0 ||
+    a === 10 ||
+    a === 127 ||
+    (a === 169 && b === 254) ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 198 && (b === 18 || b === 19)) ||
+    (a === 100 && b >= 64 && b <= 127) ||
+    a >= 224
   );
 }
 
-// Checks whether an IPv6 address falls in a private/reserved range.
 function isPrivateIPv6(ip: string): boolean {
   const addr = ip.toLowerCase().replace(/^\[/, '').replace(/\]$/, '');
   return (
-    addr === '::1' || // loopback
-    addr.startsWith('fc') || // fc00::/7 unique local
+    addr === '::1' ||
+    addr.startsWith('fc') ||
     addr.startsWith('fd') ||
-    addr.startsWith('fe8') || // fe80::/10 link-local
+    addr.startsWith('fe8') ||
     addr.startsWith('fe9') ||
     addr.startsWith('fea') ||
     addr.startsWith('feb') ||
-    addr === '::' // unspecified
+    addr === '::'
   );
 }
 
 async function isPrivateHost(hostname: string): Promise<boolean> {
-  // Reject bare hostnames with no dot (e.g. "localhost", "internal")
   if (!hostname.includes('.') && !hostname.startsWith('[')) return true;
 
-  // If the hostname is already an IP, check it directly
   if (isIPv4(hostname)) return isPrivateIPv4(hostname);
   const v6 = hostname.replace(/^\[/, '').replace(/\]$/, '');
   if (isIPv6(v6)) return isPrivateIPv6(v6);
 
-  // DNS resolve and check every returned address
   try {
     const [v4addrs, v6addrs] = await Promise.all([
       dns.resolve4(hostname).catch(() => [] as string[]),
       dns.resolve6(hostname).catch(() => [] as string[]),
     ]);
     const all = [...v4addrs, ...v6addrs];
-    if (all.length === 0) return true; // unresolvable — reject
+    if (all.length === 0) return true;
     return all.some((ip) => (isIPv4(ip) ? isPrivateIPv4(ip) : isPrivateIPv6(ip)));
   } catch {
-    return true; // DNS failure — reject
+    return true;
   }
 }
 
@@ -112,8 +108,6 @@ async function isSafeUrl(raw: string): Promise<{ ok: boolean; reason?: string }>
 
   const hostname = parsed.hostname;
 
-  // Block numeric IP bypass formats before DNS resolution:
-  // decimal (2130706433), octal (0177.0.0.1), short dotted (127.1)
   if (/^[0-9]+$/.test(hostname)) {
     return { ok: false, reason: 'Private or reserved addresses are not allowed.' };
   }
@@ -158,7 +152,6 @@ const MAX_REDIRECTS = 3;
 const MAX_BYTES = 500_000;
 const TIMEOUT_MS = 10_000;
 
-// Manually follows redirects so every hop can be validated.
 async function safeFetch(startUrl: string): Promise<{ html: string; finalUrl: string }> {
   let currentUrl = startUrl;
 
@@ -172,15 +165,13 @@ async function safeFetch(startUrl: string): Promise<{ html: string; finalUrl: st
           'NoUploadTools-TrackingChecker/1.0 (+https://nouploadtools.com/tracking-checker)',
         Accept: 'text/html',
       },
-      redirect: 'manual', // never follow automatically
+      redirect: 'manual',
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
 
-    // Follow 3xx manually
     if (res.status >= 300 && res.status < 400) {
       const location = res.headers.get('location');
       if (!location) throw new Error('Redirect with no Location header');
-      // Resolve relative redirects against the current URL
       currentUrl = new URL(location, currentUrl).toString();
       continue;
     }
@@ -198,7 +189,6 @@ async function safeFetch(startUrl: string): Promise<{ html: string; finalUrl: st
 }
 
 export async function POST(req: NextRequest) {
-  // Rate limiting — before any expensive work
   if (ratelimit) {
     const ip =
       req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
@@ -220,19 +210,29 @@ export async function POST(req: NextRequest) {
         );
       }
     } catch {
-      // Fail-open: Redis unavailable — allow request to continue
       console.warn('[rate-limit] Upstash unavailable, skipping rate limit check');
     }
   }
 
   const body = await req.json().catch(() => ({}));
-  const url: string = (body.url ?? '').trim();
+  const url: string = typeof body.url === 'string' ? body.url.trim() : '';
 
   if (!url) return NextResponse.json({ error: 'URL is required.' }, { status: 400 });
 
-  // Initial validation before any network call
   const safety = await isSafeUrl(url);
   if (!safety.ok) return NextResponse.json({ error: safety.reason }, { status: 400 });
+
+  const turnstile = await verifyTurnstileToken(body.turnstile_token, req, 'tracking-checker');
+  if (!turnstile.success) {
+    return NextResponse.json(
+      {
+        error: turnstile.temporaryFailure
+          ? 'Security verification is temporarily unavailable. Please try again.'
+          : 'Please complete the security check and try again.',
+      },
+      { status: turnstile.temporaryFailure ? 503 : 403 },
+    );
+  }
 
   let html: string;
   let finalUrl: string;

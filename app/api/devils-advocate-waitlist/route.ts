@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
@@ -44,6 +45,22 @@ export async function POST(request: Request) {
 
   if (websiteRaw && !websiteUrl) {
     return NextResponse.json({ error: 'Please enter a valid website URL.' }, { status: 400 });
+  }
+
+  const turnstile = await verifyTurnstileToken(
+    body.turnstile_token,
+    request,
+    'devils-advocate',
+  );
+  if (!turnstile.success) {
+    return NextResponse.json(
+      {
+        error: turnstile.temporaryFailure
+          ? 'Security verification is temporarily unavailable. Please try again.'
+          : 'Please complete the security check and try again.',
+      },
+      { status: turnstile.temporaryFailure ? 503 : 403 },
+    );
   }
 
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
