@@ -1,12 +1,14 @@
 'use client';
 
 import { FormEvent, useId, useState } from 'react';
+import TurnstileWidget, { isTurnstileEnabledInBrowser } from '@/components/TurnstileWidget';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
 export default function WaitlistForm() {
   const [state, setState] = useState<FormState>('idle');
   const [message, setMessage] = useState('');
+  const [turnstileReset, setTurnstileReset] = useState(0);
   const instanceId = useId().replace(/:/g, '');
   const emailId = `devils-advocate-email-${instanceId}`;
   const websiteId = `devils-advocate-website-${instanceId}`;
@@ -14,11 +16,19 @@ export default function WaitlistForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setState('submitting');
     setMessage('');
 
     const form = event.currentTarget;
     const data = new FormData(form);
+    const turnstileToken = (data.get('turnstile_token') as string | null)?.trim() || '';
+
+    if (isTurnstileEnabledInBrowser() && !turnstileToken) {
+      setState('error');
+      setMessage('Security verification is still completing. Please try again in a moment.');
+      return;
+    }
+
+    setState('submitting');
 
     try {
       const response = await fetch('/api/devils-advocate-waitlist', {
@@ -29,6 +39,7 @@ export default function WaitlistForm() {
           website_url: data.get('website_url'),
           paid_interest: data.get('paid_interest') === 'on',
           company: data.get('company'),
+          turnstile_token: turnstileToken,
         }),
       });
 
@@ -44,6 +55,8 @@ export default function WaitlistForm() {
     } catch (error) {
       setState('error');
       setMessage(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+    } finally {
+      setTurnstileReset((value) => value + 1);
     }
   }
 
@@ -145,6 +158,8 @@ export default function WaitlistForm() {
         <label htmlFor={companyId}>Company</label>
         <input id={companyId} name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
+
+      <TurnstileWidget action="devils-advocate" resetKey={turnstileReset} />
 
       <button
         type="submit"
