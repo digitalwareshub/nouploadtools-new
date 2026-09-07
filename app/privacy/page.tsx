@@ -6,7 +6,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
-    'NoUploadTools privacy policy. We collect minimal data — tool submission emails only. No file uploads, no tracking pixels, no ad networks.',
+    'NoUploadTools privacy policy. We collect minimal data for tool submissions and optional product waitlists. No tracking pixels or ad networks.',
   alternates: { canonical: 'https://nouploadtools.com/privacy' },
   openGraph: {
     title: 'Privacy Policy — NoUploadTools',
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 40 }}>
-          Last updated: June 28, 2026 · Operated by Digiwares
+          Last updated: September 7, 2026 · Operated by Digiwares
         </p>
 
         <Section title="Overview">
@@ -78,6 +78,14 @@ export default function PrivacyPage() {
             <strong>Tool submissions:</strong> When you submit a tool via the submit form, we store
             your email address, optional name/handle, and the tool details you provide. This data is
             used only to review and communicate about your submission.
+          </P>
+          <P>
+            <strong>Devil&apos;s Advocate waitlist:</strong> If you join the Devil&apos;s Advocate
+            launch waitlist, we store the email address you provide, your optional website URL, and
+            whether you asked to hear about the deeper paid investigation. We use this information
+            only for Devil&apos;s Advocate launch communication and to understand what early users are
+            interested in. We do not store IP addresses, cookies, fingerprints, or session IDs with
+            waitlist records.
           </P>
           <P>
             <strong>Tool click counts:</strong> When you click a listed tool, we record which tool
@@ -124,11 +132,16 @@ export default function PrivacyPage() {
             directory. If a submission is rejected, data may be retained briefly to prevent
             re-submission of the same URL, then deleted.
           </P>
+          <P>
+            Devil&apos;s Advocate waitlist data is retained while the product is being prepared and
+            launched, unless you ask us to delete it sooner. We may remove inactive waitlist records
+            once launch communication is complete.
+          </P>
         </Section>
 
         <Section title="Your rights">
           <P>
-            You may request deletion of your submission data at any time by emailing{' '}
+            You may request deletion of your submission or waitlist data at any time by emailing{' '}
             <a href="mailto:write@digiwares.xyz" style={{ color: 'var(--accent)' }}>
               write@digiwares.xyz
             </a>
