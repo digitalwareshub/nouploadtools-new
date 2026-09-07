@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${base}/`, changeFrequency: 'daily', priority: 1.0 },
     { url: `${base}/directory`, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${base}/devils-advocate`, changeFrequency: 'weekly', priority: 0.85 },
     ...seoLandings.map((landing) => ({
       url: `${base}/${landing.slug}`,
       changeFrequency: 'weekly' as const,
