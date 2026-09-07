@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import TurnstileWidget, { isTurnstileEnabledInBrowser } from '@/components/TurnstileWidget';
 import { submitTool } from '@/lib/supabase';
 
 const CATEGORIES = [
@@ -62,6 +63,7 @@ export default function SubmitForm() {
   const [successEmail, setSuccessEmail] = useState('');
   const [error, setError] = useState('');
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [turnstileReset, setTurnstileReset] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -76,6 +78,7 @@ export default function SubmitForm() {
     const category = data.get('category') as string;
     const email = (data.get('submitted_by_email') as string).trim();
     const ghUrl = (data.get('github_url') as string | null)?.trim() || '';
+    const turnstileToken = (data.get('turnstile_token') as string | null)?.trim() || '';
 
     if (!name) errs['name'] = true;
     if (!validUrl(url)) errs['url'] = true;
@@ -92,6 +95,12 @@ export default function SubmitForm() {
       setError('Please fix the errors above before submitting.');
       return;
     }
+
+    if (isTurnstileEnabledInBrowser() && !turnstileToken) {
+      setError('Security verification is still completing. Please try again in a moment.');
+      return;
+    }
+
     setError('');
     setSubmitting(true);
 
@@ -100,7 +109,6 @@ export default function SubmitForm() {
       url,
       tagline,
       category,
-      slug: '',
       description: (data.get('description') as string).trim() || null,
       github_url: isOss && ghUrl ? ghUrl : null,
       submitted_by_email: email,
@@ -112,18 +120,24 @@ export default function SubmitForm() {
       is_works_offline: data.get('is_works_offline') === 'on',
       is_mobile_friendly: data.get('is_mobile_friendly') === 'on',
       is_free_forever: data.get('is_free_forever') === 'on',
-      status: 'pending',
+      turnstile_token: turnstileToken,
+      company: data.get('company'),
     };
 
-    const result = await submitTool(payload);
-    setSubmitting(false);
-
-    if (result.error) {
-      setError(result.error);
-      return;
+    try {
+      const result = await submitTool(payload);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setSuccessEmail(email);
+      setSuccess(true);
+    } catch {
+      setError('Could not submit this tool right now. Please try again.');
+    } finally {
+      setSubmitting(false);
+      setTurnstileReset((value) => value + 1);
     }
-    setSuccessEmail(email);
-    setSuccess(true);
   }
 
   if (success) {
@@ -435,6 +449,15 @@ export default function SubmitForm() {
               style={field()}
             />
           </div>
+        </div>
+
+        <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1 }}>
+          <label htmlFor="submit-tool-company">Company</label>
+          <input id="submit-tool-company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
+          <TurnstileWidget action="submit-tool" resetKey={turnstileReset} />
         </div>
 
         <button
