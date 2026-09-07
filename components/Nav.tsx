@@ -72,6 +72,11 @@ export default function Nav() {
               Tracking Checker
             </Link>
           </li>
+          <li>
+            <Link href="/devils-advocate" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+              Devil&apos;s Advocate
+            </Link>
+          </li>
         </ul>
 
         <Link
@@ -94,13 +99,16 @@ export default function Nav() {
         </Link>
       </div>
 
-      {/* Mobile second row — links only, hidden on desktop */}
-      <div className="nav-mobile-links">
+      {/* Mobile second row - links only, hidden on desktop */}
+      <div className="nav-mobile-links" style={{ flexWrap: 'wrap' }}>
         <Link href="/directory" style={{ fontSize: 13, color: 'var(--text-2)' }}>
           Directory
         </Link>
         <Link href="/tracking-checker" style={{ fontSize: 13, color: 'var(--text-2)' }}>
           Tracking Checker
+        </Link>
+        <Link href="/devils-advocate" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+          Devil&apos;s Advocate
         </Link>
       </div>
     </nav>
