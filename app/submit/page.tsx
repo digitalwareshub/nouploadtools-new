@@ -58,7 +58,9 @@ export default function SubmitPage() {
         </p>
 
         <div className="submit-layout">
-          <SubmitForm />
+          <div>
+            <SubmitForm />
+          </div>
 
           <aside>
             <div
