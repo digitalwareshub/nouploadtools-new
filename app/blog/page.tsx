@@ -1,21 +1,16 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { blogPosts } from '@/lib/blog';
+import { blogPosts } from '@/lib/blog-all';
+import { buildPageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Blog — NoUploadTools',
+export const metadata = buildPageMetadata({
+  title: 'Blog',
   description:
-    'Articles on privacy-first tools, client-side processing, metadata removal, and protecting your data online.',
-  alternates: { canonical: 'https://nouploadtools.com/blog' },
-  openGraph: {
-    title: 'Blog — NoUploadTools',
-    description: 'Articles on privacy-first tools, client-side processing, and protecting your data.',
-    url: 'https://nouploadtools.com/blog',
-  },
-};
+    'Articles on privacy-first tools, client-side processing, metadata removal, startup validation, and protecting your data online.',
+  path: '/blog',
+});
 
 export default function BlogIndexPage() {
   return (
@@ -34,12 +29,12 @@ export default function BlogIndexPage() {
           Blog
         </h1>
         <p style={{ fontSize: 14, color: 'var(--text-2)', marginBottom: 40, lineHeight: 1.65 }}>
-          Articles on privacy-first tools, browser-based processing, and keeping your data on your
-          device.
+          Articles on privacy-first tools, browser-based processing, startup validation, and keeping
+          your data on your device.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {blogPosts.map((post) => (
+          {[...blogPosts].reverse().map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}

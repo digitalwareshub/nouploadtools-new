@@ -4,37 +4,29 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL('https://nouploadtools.com'),
   title: {
-    default: "NoUploadTools — Privacy-First Web Tools That Don't Upload Your Files",
-    template: '%s — NoUploadTools',
+    default: "NoUploadTools - Privacy-First Web Tools That Don't Upload Your Files",
+    template: '%s - NoUploadTools',
   },
   description:
     'A curated directory of open-source, no-login, no-ads web tools that work locally in your browser whenever possible.',
-  keywords: [
-    'no upload tools',
-    'privacy first web tools',
-    'browser tools that do not upload files',
-    'client side browser tools',
-    'offline browser tools',
-    'no login web tools',
-    'no ads web tools',
-    'open source web tools',
-    'local first web tools',
-    'website tracking checker',
-  ],
   openGraph: {
     type: 'website',
     siteName: 'NoUploadTools',
-    title: "NoUploadTools — Privacy-First Web Tools That Don't Upload Your Files",
+    title: "NoUploadTools - Privacy-First Web Tools That Don't Upload Your Files",
     description:
       'A curated directory of open-source, no-login, no-ads web tools that work locally in your browser whenever possible.',
     url: 'https://nouploadtools.com',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'NoUploadTools - Privacy-first web tools that avoid unnecessary file uploads',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "NoUploadTools — Privacy-First Web Tools That Don't Upload Your Files",
-    description:
-      'A curated directory of open-source, no-login, no-ads web tools that work locally in your browser whenever possible.',
     images: ['/og-image.png'],
   },
   robots: { index: true, follow: true },
@@ -47,11 +39,6 @@ const websiteSchema = {
   url: 'https://nouploadtools.com',
   description:
     'A curated directory of privacy-first browser tools that avoid unnecessary uploads, logins, ads, and tracking.',
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: 'https://nouploadtools.com/directory?q={search_term_string}',
-    'query-input': 'required name=search_term_string',
-  },
 };
 
 const organizationSchema = {

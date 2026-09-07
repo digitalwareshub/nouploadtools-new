@@ -1,22 +1,16 @@
-import type { Metadata } from 'next';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getApprovedTools } from '@/lib/supabase';
+import { buildPageMetadata } from '@/lib/seo';
 import DirectoryClient from './DirectoryClient';
 
-export const metadata: Metadata = {
-  title: 'Directory',
+export const metadata = buildPageMetadata({
+  title: 'Privacy-First Web Tool Directory',
   description:
     'Browse privacy-first browser tools that are open source, no-login, no-ads, free, and client-side where possible.',
-  alternates: { canonical: 'https://nouploadtools.com/directory' },
-  openGraph: {
-    title: 'Directory — NoUploadTools',
-    description:
-      'Browse privacy-first browser tools that are open source, no-login, no-ads, free, and client-side where possible.',
-    url: 'https://nouploadtools.com/directory',
-  },
-};
+  path: '/directory',
+});
 
 const VALID_CATS = new Set([
   'documents',
@@ -76,7 +70,7 @@ export default async function DirectoryPage({
               marginBottom: 8,
             }}
           >
-            Tool Directory
+            Privacy-First Web Tool Directory
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-2)' }}>
             {tools.length} listed tools · browser-based · privacy-first
