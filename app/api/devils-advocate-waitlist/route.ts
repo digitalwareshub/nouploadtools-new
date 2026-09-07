@@ -69,6 +69,7 @@ export async function POST(request: Request) {
         website_url: websiteUrl,
         paid_interest: paidInterest,
         source: 'devils-advocate-landing',
+        updated_at: new Date().toISOString(),
       }),
       cache: 'no-store',
     },
