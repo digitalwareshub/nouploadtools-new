@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import TurnstileWidget, { isTurnstileEnabledInBrowser } from '@/components/TurnstileWidget';
 
 interface CheckResult {
   url: string;
@@ -52,9 +51,8 @@ export default function TrackingCheckerClient() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CheckResult | null>(null);
   const [inputError, setInputError] = useState('');
-  const [turnstileReset, setTurnstileReset] = useState(0);
 
-  async function handleCheck(e: React.FormEvent<HTMLFormElement>) {
+  async function handleCheck(e: React.FormEvent) {
     e.preventDefault();
     const val = url.trim();
     if (!val) {
@@ -65,14 +63,6 @@ export default function TrackingCheckerClient() {
       setInputError('URL must start with http:// or https://');
       return;
     }
-
-    const formData = new FormData(e.currentTarget);
-    const turnstileToken = (formData.get('turnstile_token') as string | null)?.trim() || '';
-    if (isTurnstileEnabledInBrowser() && !turnstileToken) {
-      setInputError('Security verification is still completing. Please try again in a moment.');
-      return;
-    }
-
     setInputError('');
     setLoading(true);
     setResult(null);
@@ -81,7 +71,7 @@ export default function TrackingCheckerClient() {
       const res = await fetch('/api/check-tracking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: val, turnstile_token: turnstileToken }),
+        body: JSON.stringify({ url: val }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data) {
@@ -111,7 +101,6 @@ export default function TrackingCheckerClient() {
       });
     } finally {
       setLoading(false);
-      setTurnstileReset((value) => value + 1);
     }
   }
 
@@ -157,9 +146,6 @@ export default function TrackingCheckerClient() {
         >
           {loading ? 'Checking…' : 'Check →'}
         </button>
-        <div style={{ flexBasis: '100%', width: '100%' }}>
-          <TurnstileWidget action="tracking-checker" resetKey={turnstileReset} />
-        </div>
       </form>
       {inputError && (
         <p style={{ fontSize: 12, color: 'var(--red)', marginBottom: 16 }}>{inputError}</p>

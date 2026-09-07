@@ -3,7 +3,6 @@ import Link from 'next/link';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import NormalizeUrlInputs from '@/components/NormalizeUrlInputs';
 import SubmitForm from './SubmitForm';
 
 export const metadata: Metadata = {
@@ -23,7 +22,6 @@ export default function SubmitPage() {
       <Nav />
       <Breadcrumbs items={[{ label: 'Submit a Tool', href: '/submit' }]} />
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px 80px' }}>
-        <NormalizeUrlInputs names={['url', 'github_url']} />
         <p
           style={{
             fontSize: 12,
@@ -60,9 +58,7 @@ export default function SubmitPage() {
         </p>
 
         <div className="submit-layout">
-          <div>
-            <SubmitForm />
-          </div>
+          <SubmitForm />
 
           <aside>
             <div
