@@ -141,3 +141,34 @@ export async function adminGetClickStats(tools: AdminTool[]): Promise<ClickStats
 
   return { totalClicks, clicksToday, clicksLast7d, mostClickedName, topTools };
 }
+
+export interface AdminWaitlistSignup {
+  id: string;
+  email: string;
+  website_url: string | null;
+  paid_interest: boolean;
+  source: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function adminGetDevilsAdvocateWaitlist(): Promise<AdminWaitlistSignup[]> {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/devils_advocate_waitlist?select=id,email,website_url,paid_interest,source,created_at,updated_at&order=created_at.desc&limit=1000`,
+    {
+      headers: headers(),
+      cache: 'no-store',
+    },
+  );
+
+  if (!res.ok) {
+    console.error(
+      '[admin] getDevilsAdvocateWaitlist failed',
+      res.status,
+      await res.text().catch(() => ''),
+    );
+    return [];
+  }
+
+  return res.json();
+}
