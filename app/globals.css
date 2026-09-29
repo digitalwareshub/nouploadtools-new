@@ -372,3 +372,30 @@ a {
     padding-bottom: 10px;
   }
 }
+
+
+/* Featured placements page */
+.featured-request-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 48px;
+  align-items: start;
+}
+
+.featured-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 760px) {
+  .featured-request-layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .featured-two-col {
+    grid-template-columns: 1fr;
+  }
+}
