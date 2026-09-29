@@ -73,6 +73,11 @@ export default function Nav() {
             </Link>
           </li>
           <li>
+            <Link href="/devils-advocate" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+              Devil&apos;s Advocate
+            </Link>
+          </li>
+          <li>
             <Link href="/featured" style={{ fontSize: 13, color: 'var(--text-2)' }}>
               Get Featured
             </Link>
@@ -106,6 +111,9 @@ export default function Nav() {
         </Link>
         <Link href="/tracking-checker" style={{ fontSize: 13, color: 'var(--text-2)' }}>
           Tracking Checker
+        </Link>
+        <Link href="/devils-advocate" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+          Devil&apos;s Advocate
         </Link>
         <Link href="/featured" style={{ fontSize: 13, color: 'var(--text-2)' }}>
           Get Featured
