@@ -134,8 +134,8 @@ export default function SubmitForm() {
           Submission received
         </h2>
         <p style={{ fontSize: 14, color: 'var(--text-2)', maxWidth: 400, margin: '0 auto 24px' }}>
-          Thanks! We&apos;ll review your tool and email you at <strong>{successEmail}</strong> when
-          it goes live. Usually 1–3 days.
+          Thanks! We&apos;ll review your tool. We do not send promotional emails or contact
+          submitters about paid placements after submission.
         </p>
         <Link
           href="/directory"
@@ -404,7 +404,7 @@ export default function SubmitForm() {
               <span
                 style={{ fontWeight: 400, color: 'var(--text-3)', fontSize: 12, marginLeft: 6 }}
               >
-                We&apos;ll notify you when approved. Not published.
+                Kept with your submission for reference. Not published or used for marketing.
               </span>
             </label>
             <input
@@ -466,7 +466,7 @@ export default function SubmitForm() {
           }}
         >
           By submitting you confirm this tool genuinely processes data without unnecessary uploads.
-          False claims will be rejected.
+          False claims will be rejected. We do not use your email for promotional outreach.
         </p>
       </form>
     </>
