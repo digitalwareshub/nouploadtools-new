@@ -77,6 +77,11 @@ export default function Nav() {
               Devil&apos;s Advocate
             </Link>
           </li>
+          <li>
+            <Link href="/featured" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+              Get Featured
+            </Link>
+          </li>
         </ul>
 
         <Link
@@ -109,6 +114,9 @@ export default function Nav() {
         </Link>
         <Link href="/devils-advocate" style={{ fontSize: 13, color: 'var(--text-2)' }}>
           Devil&apos;s Advocate
+        </Link>
+        <Link href="/featured" style={{ fontSize: 13, color: 'var(--text-2)' }}>
+          Get Featured
         </Link>
       </div>
     </nav>

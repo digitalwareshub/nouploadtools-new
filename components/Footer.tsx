@@ -10,6 +10,7 @@ const SECTIONS = [
     links: [
       { label: 'All Tools', href: '/directory' },
       { label: 'Submit a Tool', href: '/submit' },
+      { label: 'Featured Placements', href: '/featured' },
       { label: 'Tracking Checker', href: '/tracking-checker' },
     ],
   },

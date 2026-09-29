@@ -9,6 +9,7 @@ const modified = {
   seoLandings: new Date('2026-07-20'),
   blog: new Date('2026-09-07'),
   trackingChecker: new Date('2026-07-20'),
+  featured: new Date('2026-09-29'),
   privacy: new Date('2026-09-07'),
 };
 
@@ -48,6 +49,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(p.dateModified),
     })),
     { url: `${base}/submit`, changeFrequency: 'monthly', priority: 0.7 },
+    {
+      url: `${base}/featured`,
+      lastModified: modified.featured,
+      changeFrequency: 'monthly',
+      priority: 0.65,
+    },
     {
       url: `${base}/tracking-checker`,
       lastModified: modified.trackingChecker,
