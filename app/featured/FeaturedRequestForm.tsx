@@ -1,11 +1,14 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 
 type ApprovedTool = {
+  id: string;
   name: string;
   url: string;
 };
+
+type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
 function field(style?: React.CSSProperties): React.CSSProperties {
   return {
@@ -32,25 +35,25 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
     [tools],
   );
   const [errors, setErrors] = useState<Record<string, boolean>>({});
-  const [prepared, setPrepared] = useState(false);
+  const [state, setState] = useState<FormState>('idle');
+  const [message, setMessage] = useState('');
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const nextErrors: Record<string, boolean> = {};
 
-    const toolValue = String(data.get('tool') || '').trim();
+    const toolId = String(data.get('tool_id') || '').trim();
     const applicant = String(data.get('applicant') || '').trim();
     const email = String(data.get('email') || '').trim();
     const role = String(data.get('role') || '').trim();
     const timing = String(data.get('timing') || '').trim();
     const reason = String(data.get('reason') || '').trim();
-    const message = String(data.get('message') || '').trim();
     const ownership = data.get('ownership') === 'on';
-    const website = String(data.get('website') || '').trim();
 
-    if (website) return;
-    if (!toolValue) nextErrors.tool = true;
+    if (!toolId || !sortedTools.some((tool) => tool.id === toolId)) nextErrors.tool = true;
     if (!applicant) nextErrors.applicant = true;
     if (!validEmail(email)) nextErrors.email = true;
     if (!role) nextErrors.role = true;
@@ -59,43 +62,57 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
     if (!ownership) nextErrors.ownership = true;
 
     setErrors(nextErrors);
+    setMessage('');
+
     if (Object.keys(nextErrors).length > 0) {
-      setPrepared(false);
+      setState('error');
+      setMessage('Please fix the highlighted fields before submitting.');
       return;
     }
 
-    const selected = sortedTools.find((tool) => `${tool.name} — ${tool.url}` === toolValue);
-    const toolName = selected?.name ?? toolValue;
+    setState('submitting');
 
-    const body = [
-      'Featured placement request',
-      '',
-      `Tool: ${toolValue}`,
-      `Applicant: ${applicant}`,
-      `Work email: ${email}`,
-      `Role: ${role}`,
-      `Preferred timing: ${timing}`,
-      '',
-      'Why this tool is useful:',
-      reason,
-      '',
-      'Additional note:',
-      message || '—',
-      '',
-      'I confirm that I own or officially represent this tool.',
-    ].join('\n');
+    try {
+      const response = await fetch('/api/featured-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tool_id: toolId,
+          applicant_name: applicant,
+          applicant_email: email,
+          role,
+          preferred_timing: timing,
+          reason,
+          message: String(data.get('message') || '').trim(),
+          ownership_confirmed: ownership,
+          website: String(data.get('website') || '').trim(),
+        }),
+      });
 
-    const mailto = `mailto:write@digiwares.xyz?subject=${encodeURIComponent(
-      `Featured placement request — ${toolName}`,
-    )}&body=${encodeURIComponent(body)}`;
+      const result = (await response.json().catch(() => ({}))) as { error?: string };
 
-    setPrepared(true);
-    window.location.href = mailto;
+      if (!response.ok) {
+        throw new Error(result.error || 'Could not submit your request. Please try again.');
+      }
+
+      form.reset();
+      setErrors({});
+      setState('success');
+      setMessage(
+        'Request received. We’ll review the tool and contact you at your submitted email if a placement is available.',
+      );
+    } catch (error) {
+      setState('error');
+      setMessage(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <div style={{ display: 'none' }} aria-hidden="true">
+      <div
+        aria-hidden="true"
+        style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}
+      >
         <label>
           Website
           <input type="text" name="website" tabIndex={-1} autoComplete="off" />
@@ -107,16 +124,17 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
           Approved tool <span style={{ color: 'var(--red)' }}>*</span>
         </label>
         <select
-          name="tool"
+          name="tool_id"
           defaultValue=""
+          disabled={state === 'submitting'}
           style={field({
             borderColor: errors.tool ? 'var(--red)' : undefined,
-            cursor: 'pointer',
+            cursor: state === 'submitting' ? 'wait' : 'pointer',
           })}
         >
           <option value="">— Select your listed tool —</option>
           {sortedTools.map((tool) => (
-            <option key={tool.url} value={`${tool.name} — ${tool.url}`}>
+            <option key={tool.id} value={tool.id}>
               {tool.name}
             </option>
           ))}
@@ -143,6 +161,8 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
             name="applicant"
             type="text"
             maxLength={100}
+            disabled={state === 'submitting'}
+            autoComplete="name"
             placeholder="Your name"
             style={field({ borderColor: errors.applicant ? 'var(--red)' : undefined })}
           />
@@ -158,7 +178,10 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
           <input
             name="email"
             type="email"
-            maxLength={200}
+            inputMode="email"
+            autoComplete="email"
+            maxLength={254}
+            disabled={state === 'submitting'}
             placeholder="you@yourtool.com"
             style={field({ borderColor: errors.email ? 'var(--red)' : undefined })}
           />
@@ -178,16 +201,17 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
           <select
             name="role"
             defaultValue=""
+            disabled={state === 'submitting'}
             style={field({
               borderColor: errors.role ? 'var(--red)' : undefined,
-              cursor: 'pointer',
+              cursor: state === 'submitting' ? 'wait' : 'pointer',
             })}
           >
             <option value="">— Select —</option>
-            <option value="Owner / founder">Owner / founder</option>
-            <option value="Employee / team member">Employee / team member</option>
-            <option value="Agency / representative">Agency / representative</option>
-            <option value="Other">Other</option>
+            <option value="owner_founder">Owner / founder</option>
+            <option value="employee_team_member">Employee / team member</option>
+            <option value="agency_representative">Agency / representative</option>
+            <option value="other">Other</option>
           </select>
           {errors.role && (
             <p style={{ fontSize: 12, color: 'var(--red)', marginTop: 5 }}>Required.</p>
@@ -201,15 +225,16 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
           <select
             name="timing"
             defaultValue=""
+            disabled={state === 'submitting'}
             style={field({
               borderColor: errors.timing ? 'var(--red)' : undefined,
-              cursor: 'pointer',
+              cursor: state === 'submitting' ? 'wait' : 'pointer',
             })}
           >
             <option value="">— Select —</option>
-            <option value="As soon as a slot is available">As soon as a slot is available</option>
-            <option value="Within the next month">Within the next month</option>
-            <option value="Later / just exploring">Later / just exploring</option>
+            <option value="asap">As soon as a slot is available</option>
+            <option value="next_month">Within the next month</option>
+            <option value="exploring">Later / just exploring</option>
           </select>
           {errors.timing && (
             <p style={{ fontSize: 12, color: 'var(--red)', marginTop: 5 }}>Required.</p>
@@ -226,6 +251,7 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
           name="reason"
           rows={3}
           maxLength={220}
+          disabled={state === 'submitting'}
           placeholder="One concise reason your tool is useful to this audience."
           style={field({
             resize: 'vertical',
@@ -246,6 +272,7 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
           name="message"
           rows={3}
           maxLength={500}
+          disabled={state === 'submitting'}
           placeholder="Anything we should know before reviewing the request."
           style={field({ resize: 'vertical' })}
         />
@@ -261,12 +288,13 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
           background: 'var(--bg-card)',
           padding: '12px 13px',
           marginBottom: 18,
-          cursor: 'pointer',
+          cursor: state === 'submitting' ? 'wait' : 'pointer',
         }}
       >
         <input
           type="checkbox"
           name="ownership"
+          disabled={state === 'submitting'}
           style={{ marginTop: 3, accentColor: 'var(--accent)', cursor: 'pointer' }}
         />
         <span style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.55 }}>
@@ -283,20 +311,22 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
 
       <button
         type="submit"
+        disabled={state === 'submitting'}
         style={{
           width: '100%',
           padding: 12,
-          background: 'var(--accent)',
+          background: state === 'submitting' ? 'var(--accent-dk)' : 'var(--accent)',
           color: '#fff',
           border: 'none',
           borderRadius: 'var(--radius)',
           fontFamily: 'Inter, sans-serif',
           fontSize: 14,
           fontWeight: 650,
-          cursor: 'pointer',
+          cursor: state === 'submitting' ? 'wait' : 'pointer',
+          opacity: state === 'submitting' ? 0.85 : 1,
         }}
       >
-        Prepare featured request email →
+        {state === 'submitting' ? 'Submitting…' : 'Request featured placement →'}
       </button>
 
       <p
@@ -308,26 +338,26 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
           lineHeight: 1.55,
         }}
       >
-        This pilot does not collect payment details. Submitting prepares an email to
-        write@digiwares.xyz for manual review.
+        No payment details are collected here. Pricing and availability are provided only after
+        manual review.
       </p>
 
-      {prepared && (
+      {message && (
         <div
           role="status"
+          aria-live="polite"
           style={{
             marginTop: 14,
             padding: '10px 12px',
-            border: '1px solid var(--green-br)',
-            background: 'var(--green-bg)',
-            color: 'var(--green)',
+            border: `1px solid ${state === 'success' ? 'var(--green-br)' : 'var(--red-br)'}`,
+            background: state === 'success' ? 'var(--green-bg)' : 'var(--red-bg)',
+            color: state === 'success' ? 'var(--green)' : 'var(--red)',
             borderRadius: 'var(--radius)',
             fontSize: 12,
             lineHeight: 1.55,
           }}
         >
-          Your email app should open with the request prepared. Send that email to complete your
-          request.
+          {message}
         </div>
       )}
     </form>
