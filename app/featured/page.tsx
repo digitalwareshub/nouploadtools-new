@@ -482,7 +482,7 @@ export default async function FeaturedPage() {
               </p>
 
               <FeaturedRequestForm
-                tools={approvedTools.map((tool) => ({ name: tool.name, url: tool.url }))}
+                tools={approvedTools.map((tool) => ({ id: tool.id, name: tool.name, url: tool.url }))}
               />
             </div>
 
