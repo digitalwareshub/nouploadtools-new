@@ -476,10 +476,29 @@ export default async function FeaturedPage() {
               >
                 Tell us which approved tool you represent.
               </h2>
-              <p style={{ fontSize: 14, color: 'var(--text-2)', lineHeight: 1.7, marginBottom: 28 }}>
+              <p style={{ fontSize: 14, color: 'var(--text-2)', lineHeight: 1.7, marginBottom: 16 }}>
                 We will review the request manually. If the placement is accepted, we will send
                 availability, terms, and pricing before asking for payment.
               </p>
+
+              <div
+                style={{
+                  border: '1px solid var(--green-br)',
+                  background: 'var(--green-bg)',
+                  borderRadius: 10,
+                  padding: '14px 16px',
+                  marginBottom: 28,
+                }}
+              >
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--green)', marginBottom: 4 }}>
+                  No unsolicited follow-up
+                </p>
+                <p style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.6 }}>
+                  We do not email tool submitters to promote Featured placements or other paid
+                  offers. If you are interested, you must request a placement yourself. We only
+                  contact you about a Featured request that you initiate.
+                </p>
+              </div>
 
               <FeaturedRequestForm
                 tools={approvedTools.map((tool) => ({ id: tool.id, name: tool.name, url: tool.url }))}
