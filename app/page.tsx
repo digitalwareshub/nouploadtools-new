@@ -247,6 +247,26 @@ export default async function HomePage() {
               </p>
             </div>
           </div>
+
+          <div
+            style={{
+              maxWidth: 1100,
+              margin: '32px auto 0',
+              border: '1px solid var(--red-br)',
+              background: 'var(--red-bg)',
+              borderRadius: 10,
+              padding: '18px 20px',
+            }}
+          >
+            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 6, color: 'var(--red)' }}>
+              No session replay
+            </h3>
+            <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.65, margin: 0 }}>
+              We do not approve tools that use Microsoft Clarity, Hotjar, FullStory, LogRocket,
+              Mouseflow, or similar services to record or reconstruct individual visitor sessions.
+              Basic privacy-respecting analytics may be acceptable. Session replay is not.
+            </p>
+          </div>
         </section>
 
         {/* WHY NO-UPLOAD */}
