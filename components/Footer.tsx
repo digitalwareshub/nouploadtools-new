@@ -17,18 +17,18 @@ const SECTIONS = [
   {
     title: 'Guides',
     links: [
+      { label: 'Blog', href: '/blog' },
       { label: 'No-upload PDF tools', href: '/no-upload-pdf-tools' },
       { label: 'Image privacy tools', href: '/privacy-first-image-tools' },
       { label: 'Developer tools', href: '/client-side-developer-tools' },
       { label: 'Offline browser tools', href: '/offline-browser-tools' },
+      { label: 'How We Review', href: '/how-we-review' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { label: 'Blog', href: '/blog' },
       { label: 'Contact', href: '/contact' },
-      { label: 'How We Review', href: '/how-we-review' },
       {
         label: 'Source code',
         href: 'https://github.com/digitalwareshub/nouploadtools-new',
