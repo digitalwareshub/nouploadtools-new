@@ -50,7 +50,7 @@ export default function SubmitPage() {
           style={{
             fontSize: 14,
             color: 'var(--text-2)',
-            marginBottom: 36,
+            marginBottom: 20,
             lineHeight: 1.65,
             maxWidth: 600,
           }}
@@ -58,6 +58,27 @@ export default function SubmitPage() {
           Every tool is manually reviewed before going live. Open source and fully client-side tools
           get priority. Approval usually takes 1–3 days.
         </p>
+
+        <div
+          style={{
+            maxWidth: 720,
+            border: '1px solid var(--red-br)',
+            background: 'var(--red-bg)',
+            borderRadius: 10,
+            padding: '16px 18px',
+            marginBottom: 36,
+          }}
+        >
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--red)', marginBottom: 6 }}>
+            Session replay tools are not accepted
+          </h2>
+          <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.65, margin: 0 }}>
+            If your tool uses Microsoft Clarity, Hotjar, FullStory, LogRocket, Mouseflow, or any
+            similar session-replay service, please do not submit it. We do not approve tools that
+            record or reconstruct individual visitor sessions. Basic privacy-respecting analytics
+            may be acceptable, but session replay is not.
+          </p>
+        </div>
 
         <div className="submit-layout">
           <div>
@@ -118,7 +139,7 @@ export default function SubmitPage() {
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {[
                   'We check whether the tool works without login',
-                  'We check for obvious third-party tracking/ad scripts',
+                  'We reject session replay tools such as Microsoft Clarity',
                   'We prefer public source code',
                   'We check whether processing happens client-side where possible',
                   'We do not guarantee perfect security',
