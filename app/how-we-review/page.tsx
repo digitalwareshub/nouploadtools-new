@@ -27,8 +27,8 @@ const STEPS = [
     body: "Can you use the tool without creating an account? If a tool hides its core functionality behind a signup wall, it gets the 'requires login' note or is excluded. Minimal account options (like saving history) are fine as long as core use is available without signing in.",
   },
   {
-    heading: 'We look for ads and tracking scripts',
-    body: "We prefer tools with no advertising and minimal or no third-party tracking. A tool can still be listed if it has ads, but it won't carry the 'No Ads' badge. We note whether tracking scripts are present, but we're not able to certify the full privacy posture of every third party a tool uses.",
+    heading: 'We reject session replay and review tracking',
+    body: "We check for advertising, analytics, tracking, and session-replay scripts. Basic privacy-respecting analytics may be acceptable, but session replay is not. If a tool uses Microsoft Clarity, Hotjar, FullStory, LogRocket, Mouseflow, or a similar service to record or reconstruct individual visitor sessions, we do not approve it.",
   },
   {
     heading: 'Open source is preferred, not required',
@@ -58,10 +58,29 @@ export default function HowWeReviewPage() {
             How we review tools
           </h1>
 
-          <p style={{ fontSize: 15, color: 'var(--text-2)', lineHeight: 1.75, marginBottom: 48 }}>
+          <p style={{ fontSize: 15, color: 'var(--text-2)', lineHeight: 1.75, marginBottom: 24 }}>
             Every tool in this directory is reviewed before it goes live. Here&apos;s exactly what
             we check — and what we don&apos;t.
           </p>
+
+          <div
+            style={{
+              border: '1px solid var(--red-br)',
+              background: 'var(--red-bg)',
+              borderRadius: 10,
+              padding: '16px 18px',
+              marginBottom: 48,
+            }}
+          >
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--red)', marginBottom: 5 }}>
+              Hard rule: no session replay
+            </p>
+            <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.65, margin: 0 }}>
+              Tools using Microsoft Clarity, Hotjar, FullStory, LogRocket, Mouseflow, or similar
+              session-replay technology are not approved. We do not accept tools that record or
+              reconstruct individual visitor sessions.
+            </p>
+          </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
             {STEPS.map((step, i) => (
