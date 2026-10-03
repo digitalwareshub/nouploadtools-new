@@ -98,21 +98,15 @@ export async function getToolClickCounts(): Promise<Map<string, number>> {
 }
 
 export async function submitTool(payload: Record<string, unknown>): Promise<{ error?: string }> {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/tools`, {
+  const res = await fetch('/api/submit-tool', {
     method: 'POST',
-    headers: {
-      apikey: SUPABASE_ANON,
-      Authorization: `Bearer ${SUPABASE_ANON}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
+
+  const result = (await res.json().catch(() => ({}))) as { error?: string };
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    if (err.code === '23505')
-      return { error: 'This URL is already in our directory or pending review.' };
-    return { error: err.message || `Error ${res.status}` };
+    return { error: result.error || `Error ${res.status}` };
   }
   return {};
 }
