@@ -60,7 +60,6 @@ export default function SubmitForm() {
   const [isOss, setIsOss] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [successEmail, setSuccessEmail] = useState('');
   const [error, setError] = useState('');
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [turnstileToken, setTurnstileToken] = useState('');
@@ -140,7 +139,6 @@ export default function SubmitForm() {
         return;
       }
 
-      setSuccessEmail(email);
       setSuccess(true);
     } catch {
       setError('Could not submit this tool right now. Please try again.');
@@ -462,9 +460,18 @@ export default function SubmitForm() {
           </div>
         </div>
 
-        <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1 }}>
+        <div
+          aria-hidden="true"
+          style={{ position: 'absolute', left: '-10000px', width: 1, height: 1 }}
+        >
           <label htmlFor="submit-tool-company">Company</label>
-          <input id="submit-tool-company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+          <input
+            id="submit-tool-company"
+            name="company"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+          />
         </div>
 
         <div style={{ marginBottom: 12 }}>

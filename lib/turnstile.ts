@@ -1,4 +1,37 @@
+import { BlockList, isIP } from 'node:net';
+
 const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+
+// Cloudflare's published proxy ranges, checked 2026-10-03:
+// https://www.cloudflare.com/ips-v4/ and https://www.cloudflare.com/ips-v6/
+const cloudflareProxies = new BlockList();
+for (const range of [
+  '173.245.48.0/20',
+  '103.21.244.0/22',
+  '103.22.200.0/22',
+  '103.31.4.0/22',
+  '141.101.64.0/18',
+  '108.162.192.0/18',
+  '190.93.240.0/20',
+  '188.114.96.0/20',
+  '197.234.240.0/22',
+  '198.41.128.0/17',
+  '162.158.0.0/15',
+  '104.16.0.0/13',
+  '104.24.0.0/14',
+  '172.64.0.0/13',
+  '131.0.72.0/22',
+  '2400:cb00::/32',
+  '2606:4700::/32',
+  '2803:f800::/32',
+  '2405:b500::/32',
+  '2405:8100::/32',
+  '2a06:98c0::/29',
+  '2c0f:f248::/32',
+]) {
+  const [address, prefix] = range.split('/');
+  cloudflareProxies.addSubnet(address, Number(prefix), isIP(address) === 6 ? 'ipv6' : 'ipv4');
+}
 
 interface TurnstileResponse {
   success: boolean;
@@ -14,11 +47,19 @@ export interface TurnstileVerification {
 }
 
 export function getClientIp(request: Request): string | undefined {
-  return (
+  const peer =
+    request.headers.get('x-vercel-forwarded-for')?.split(',')[0]?.trim() ||
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    request.headers.get('x-real-ip') ||
-    undefined
-  );
+    request.headers.get('x-real-ip')?.trim();
+  if (!peer || !isIP(peer)) return undefined;
+
+  // Vercel overwrites its forwarding headers. Trust CF-Connecting-IP only
+  // when that trusted peer is Cloudflare, never on direct Vercel requests.
+  if (cloudflareProxies.check(peer, isIP(peer) === 6 ? 'ipv6' : 'ipv4')) {
+    const visitor = request.headers.get('cf-connecting-ip')?.trim();
+    return visitor && isIP(visitor) ? visitor : undefined;
+  }
+  return peer;
 }
 
 export async function verifyTurnstileToken(
@@ -53,8 +94,8 @@ export async function verifyTurnstileToken(
       cache: 'no-store',
       signal: AbortSignal.timeout(8000),
     });
-  } catch (error) {
-    console.error('[turnstile] Siteverify request failed', error);
+  } catch {
+    console.error('[turnstile] Siteverify request failed');
     return { success: false, configured: true, temporaryFailure: true };
   }
 
@@ -65,7 +106,7 @@ export async function verifyTurnstileToken(
 
   const result = (await response.json().catch(() => null)) as TurnstileResponse | null;
 
-  if (!result?.success) {
+  if (result?.success !== true) {
     console.warn('[turnstile] Verification rejected', result?.['error-codes'] ?? []);
     return { success: false, configured: true };
   }
@@ -75,6 +116,21 @@ export async function verifyTurnstileToken(
       expected: expectedAction,
       received: result.action,
     });
+    return { success: false, configured: true };
+  }
+
+  const allowedHostnames = (
+    process.env.TURNSTILE_ALLOWED_HOSTNAMES ??
+    'nouploadtools.com,www.nouploadtools.com,nouploadtools-new.vercel.app'
+  )
+    .split(',')
+    .map((hostname) => hostname.trim().toLowerCase())
+    .filter(Boolean);
+  if (
+    typeof result.hostname !== 'string' ||
+    !allowedHostnames.includes(result.hostname.toLowerCase())
+  ) {
+    console.warn('[turnstile] Hostname mismatch');
     return { success: false, configured: true };
   }
 

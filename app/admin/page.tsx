@@ -4,6 +4,7 @@ import {
   adminGetAllTools,
   adminGetClickStats,
   adminGetDevilsAdvocateWaitlist,
+  adminGetSubmissionSourceCounts,
   type AdminTool,
   type AdminWaitlistSignup,
   type ClickStats,
@@ -228,6 +229,14 @@ function ToolRow({ tool, now }: { tool: AdminTool; now: number }) {
             <Badge on={tool.is_works_offline} label="OFFLINE" />
             <Badge on={tool.is_free_forever} label="FREE" />
             <Badge on={tool.is_mobile_friendly} label="MOBILE" />
+            {(tool.recentSourceSubmissions ?? 0) >= 3 && (
+              <span
+                title="Shared network source; this does not necessarily indicate spam."
+                style={{ fontSize: 11, color: '#b45309' }}
+              >
+                {tool.recentSourceSubmissions} submissions from same source in 24h
+              </span>
+            )}
           </div>
           <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 3 }}>
             {CAT_LABELS[tool.category] ?? tool.category} · {ago(tool.submitted_at)}
@@ -632,15 +641,22 @@ function WaitlistDashboard({ signups, now }: { signups: AdminWaitlistSignup[]; n
   const total = signups.length;
   const paid = signups.filter((signup) => signup.paid_interest).length;
   const websites = signups.filter((signup) => Boolean(signup.website_url)).length;
-  const last24h = signups.filter((signup) => now - new Date(signup.created_at).getTime() < DAY).length;
-  const last7d = signups.filter((signup) => now - new Date(signup.created_at).getTime() < 7 * DAY).length;
+  const last24h = signups.filter(
+    (signup) => now - new Date(signup.created_at).getTime() < DAY,
+  ).length;
+  const last7d = signups.filter(
+    (signup) => now - new Date(signup.created_at).getTime() < 7 * DAY,
+  ).length;
 
   return (
     <>
       <div style={{ marginBottom: 18 }}>
-        <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 5 }}>Devil&apos;s Advocate Waitlist</h2>
+        <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 5 }}>
+          Devil&apos;s Advocate Waitlist
+        </h2>
         <p style={{ fontSize: 12, color: 'var(--text-3)', lineHeight: 1.6 }}>
-          Signups from the Devil&apos;s Advocate landing page. Paid-interest responses are highlighted.
+          Signups from the Devil&apos;s Advocate landing page. Paid-interest responses are
+          highlighted.
         </p>
       </div>
 
@@ -745,7 +761,9 @@ function WaitlistDashboard({ signups, now }: { signups: AdminWaitlistSignup[]; n
                         <span style={{ color: 'var(--text-3)' }}>No</span>
                       )}
                     </td>
-                    <td style={{ padding: '10px 12px', color: 'var(--text-3)', whiteSpace: 'nowrap' }}>
+                    <td
+                      style={{ padding: '10px 12px', color: 'var(--text-3)', whiteSpace: 'nowrap' }}
+                    >
                       {signup.source}
                     </td>
                   </tr>
@@ -870,7 +888,14 @@ export default async function AdminPage({
     );
   }
 
-  const tools = await adminGetAllTools();
+  const [allTools, sourceCounts] = await Promise.all([
+    adminGetAllTools(),
+    adminGetSubmissionSourceCounts(),
+  ]);
+  const tools = allTools.map((tool) => ({
+    ...tool,
+    recentSourceSubmissions: sourceCounts.get(tool.id) ?? 0,
+  }));
   const clicks = await adminGetClickStats(tools);
   const statusFilter = params.status ?? 'pending';
 

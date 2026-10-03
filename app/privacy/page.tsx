@@ -54,7 +54,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p style={{ fontSize: 12, color: 'var(--text-3)', marginBottom: 40 }}>
-          Last updated: September 7, 2026 · Operated by Digiwares
+          Last updated: October 3, 2026 · Operated by Digiwares
         </p>
 
         <Section title="Overview">
@@ -80,17 +80,24 @@ export default function PrivacyPage() {
             used only to review and communicate about your submission.
           </P>
           <P>
+            <strong>Submission abuse prevention:</strong> We derive a private source identifier from
+            your network IP using a secret key. We store this identifier with the submitted tool ID,
+            domain, time, and submission outcome to limit bulk submissions and help reviewers notice
+            repeated sources. We do not store your raw IP in this log or use browser fingerprinting.
+            Your email and name are accessible only to our review system.
+          </P>
+          <P>
             <strong>Devil&apos;s Advocate waitlist:</strong> If you join the Devil&apos;s Advocate
             launch waitlist, we store the email address you provide, your optional website URL, and
             whether you asked to hear about the deeper paid investigation. We use this information
-            only for Devil&apos;s Advocate launch communication and to understand what early users are
-            interested in. We do not store IP addresses, cookies, fingerprints, or session IDs with
-            waitlist records.
+            only for Devil&apos;s Advocate launch communication and to understand what early users
+            are interested in. We do not store IP addresses, cookies, fingerprints, or session IDs
+            with waitlist records.
           </P>
           <P>
             <strong>Tool click counts:</strong> When you click a listed tool, we record which tool
-            was clicked, the time, and which page you clicked from (directory or homepage). We do not
-            store IP addresses, user agents, cookies, fingerprints, session IDs, or any personal
+            was clicked, the time, and which page you clicked from (directory or homepage). We do
+            not store IP addresses, user agents, cookies, fingerprints, session IDs, or any personal
             identifiers with click records. Click counts are used to understand which listed tools
             are useful.
           </P>

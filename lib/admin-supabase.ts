@@ -32,6 +32,25 @@ export interface AdminTool {
   status: string;
   submitted_at: string;
   approved_at: string | null;
+  recentSourceSubmissions?: number;
+}
+
+export async function adminGetSubmissionSourceCounts(): Promise<Map<string, number>> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submission_source_counts`, {
+      method: 'POST',
+      headers: headers(),
+      body: '{}',
+      cache: 'no-store',
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) throw new Error('Source counts unavailable');
+    const rows: { tool_id: string; submission_count: number }[] = await res.json();
+    return new Map(rows.map((row) => [row.tool_id, row.submission_count]));
+  } catch {
+    console.error('[admin] Submission source counts unavailable');
+    return new Map();
+  }
 }
 
 export async function adminGetAllTools(): Promise<AdminTool[]> {

@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { FormEvent, useMemo, useState } from 'react';
 
 type ApprovedTool = {
@@ -103,7 +105,9 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
       );
     } catch (error) {
       setState('error');
-      setMessage(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+      setMessage(
+        error instanceof Error ? error.message : 'Something went wrong. Please try again.',
+      );
     }
   }
 
@@ -146,9 +150,9 @@ export default function FeaturedRequestForm({ tools }: { tools: ApprovedTool[] }
         )}
         <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 5, lineHeight: 1.5 }}>
           Not listed yet?{' '}
-          <a href="/submit" style={{ color: 'var(--accent)', fontWeight: 600 }}>
+          <Link href="/submit" style={{ color: 'var(--accent)', fontWeight: 600 }}>
             Submit your tool for free first.
-          </a>
+          </Link>
         </p>
       </div>
 

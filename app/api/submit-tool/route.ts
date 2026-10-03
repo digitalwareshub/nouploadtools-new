@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyTurnstileToken } from '@/lib/turnstile';
+import { consumeSubmissionQuota, submissionFingerprint } from '@/lib/submission-abuse';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
@@ -50,7 +51,11 @@ function validUrl(value: string): boolean {
 export async function POST(request: NextRequest) {
   let body: Record<string, unknown>;
   try {
-    body = (await request.json()) as Record<string, unknown>;
+    const parsed: unknown = await request.json();
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
+    }
+    body = parsed as Record<string, unknown>;
   } catch {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
   }
@@ -116,6 +121,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let fingerprint: string;
+  try {
+    fingerprint = submissionFingerprint(request);
+    const quota = await consumeSubmissionQuota(fingerprint);
+    if (!quota.allowed) {
+      return NextResponse.json(
+        { error: 'You have submitted several tools recently. Please wait before trying again.' },
+        { status: 429, headers: { 'Retry-After': String(quota.retryAfter) } },
+      );
+    }
+  } catch {
+    console.error('[submit-tool] Submission protection unavailable');
+    return NextResponse.json(
+      { error: 'Tool submission is temporarily unavailable. Please try again shortly.' },
+      { status: 503 },
+    );
+  }
+
   const payload = {
     name,
     url,
@@ -130,17 +153,30 @@ export async function POST(request: NextRequest) {
     status: 'pending',
   };
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/tools`, {
-    method: 'POST',
-    headers: {
-      apikey: SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
-    },
-    body: JSON.stringify(payload),
-    cache: 'no-store',
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/insert_tool_submission`, {
+      method: 'POST',
+      headers: {
+        apikey: SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        p_tool: payload,
+        p_fingerprint: fingerprint,
+        p_domain: new URL(url).hostname.toLowerCase(),
+      }),
+      cache: 'no-store',
+      signal: AbortSignal.timeout(10000),
+    });
+  } catch {
+    console.error('[submit-tool] Database request failed');
+    return NextResponse.json(
+      { error: 'Could not submit this tool right now. Please try again shortly.' },
+      { status: 503 },
+    );
+  }
 
   if (!response.ok) {
     const raw = await response.text().catch(() => '');
@@ -160,7 +196,7 @@ export async function POST(request: NextRequest) {
 
     console.error('[submit-tool] Supabase insert failed', {
       status: response.status,
-      body: raw,
+      code,
     });
 
     return NextResponse.json(

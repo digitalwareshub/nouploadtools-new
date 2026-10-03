@@ -1,7 +1,7 @@
 'use client';
 
 import Script from 'next/script';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? '';
 
@@ -49,6 +49,13 @@ export default function TurnstileWidget({
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const onTokenChangeRef = useRef(onTokenChange);
+  const [verificationError, setVerificationError] = useState(false);
+  const readyRef = useRef(false);
+
+  const showError = useCallback(() => {
+    onTokenChangeRef.current('');
+    setVerificationError(true);
+  }, []);
 
   useEffect(() => {
     onTokenChangeRef.current = onTokenChange;
@@ -57,6 +64,7 @@ export default function TurnstileWidget({
   const renderWidget = useCallback(() => {
     if (!SITE_KEY || !containerRef.current || !window.turnstile || widgetIdRef.current) return;
 
+    readyRef.current = true;
     widgetIdRef.current = window.turnstile.render(containerRef.current, {
       sitekey: SITE_KEY,
       theme: 'auto',
@@ -67,15 +75,26 @@ export default function TurnstileWidget({
       'refresh-expired': 'auto',
       'refresh-timeout': 'auto',
       'response-field': false,
-      callback: (token) => onTokenChangeRef.current(token),
+      callback: (token) => {
+        setVerificationError(false);
+        onTokenChangeRef.current(token);
+      },
       'expired-callback': () => onTokenChangeRef.current(''),
-      'timeout-callback': () => onTokenChangeRef.current(''),
+      'timeout-callback': showError,
       'error-callback': (errorCode) => {
-        onTokenChangeRef.current('');
+        showError();
         if (errorCode) console.warn('[turnstile] Client verification error', errorCode);
       },
     });
-  }, [action]);
+  }, [action, showError]);
+
+  useEffect(() => {
+    if (!SITE_KEY) return;
+    const timer = window.setTimeout(() => {
+      if (!readyRef.current) showError();
+    }, 15000);
+    return () => window.clearTimeout(timer);
+  }, [showError]);
 
   useEffect(() => {
     renderWidget();
@@ -111,8 +130,28 @@ export default function TurnstileWidget({
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         strategy="afterInteractive"
         onReady={renderWidget}
+        onError={showError}
       />
       <div ref={containerRef} style={{ width: '100%', minHeight: 1 }} />
+      {verificationError && (
+        <div role="alert" style={{ fontSize: 12, color: 'var(--red)' }}>
+          Security verification could not load or complete. Please retry.
+          <button
+            type="button"
+            onClick={() => {
+              if (widgetIdRef.current && window.turnstile) {
+                setVerificationError(false);
+                window.turnstile.reset(widgetIdRef.current);
+              } else {
+                window.location.reload();
+              }
+            }}
+            style={{ marginLeft: 8, cursor: 'pointer' }}
+          >
+            Retry verification
+          </button>
+        </div>
+      )}
     </>
   );
 }
