@@ -19,6 +19,8 @@
 
 Production rollout: private abuse-log/RPC and contact-field migrations applied; new HMAC secrets configured on Vercel Production and Preview. Final application deployment: https://nouploadtools-8ph7i4zoq-digiwares.vercel.app (promoted to https://nouploadtools.com). Deployment was performed directly from the working folder before the Git commit. Application changes, tests, and all three already-applied database migrations are recorded together in the repository; the migrations do not need to be reapplied to production.
 
+Requested fresh production redeploy: commit `93c7b44`, deployment `dpl_5M1DUpAvvQDEwxhSKqr3gxfgH41y` (https://nouploadtools-7deybuwlb-digiwares.vercel.app). Vercel reports READY and confirms nouploadtools.com and www.nouploadtools.com point to this deployment. Turnstile configuration was unchanged.
+
 Verified:
 
 - `npm test`: 15 passing tests, including real local Redis hourly/daily boundaries/concurrency, spoofed Cloudflare headers, and rendered admin warning threshold.
