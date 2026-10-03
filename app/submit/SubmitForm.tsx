@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
+import TurnstileWidget, { isTurnstileEnabledInBrowser } from '@/components/TurnstileWidget';
 import { submitTool } from '@/lib/supabase';
 
 const CATEGORIES = [
@@ -62,6 +63,8 @@ export default function SubmitForm() {
   const [successEmail, setSuccessEmail] = useState('');
   const [error, setError] = useState('');
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileReset, setTurnstileReset] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -92,6 +95,17 @@ export default function SubmitForm() {
       setError('Please fix the errors above before submitting.');
       return;
     }
+
+    if (!isTurnstileEnabledInBrowser()) {
+      setError('Security verification is temporarily unavailable. Please try again later.');
+      return;
+    }
+
+    if (!turnstileToken) {
+      setError('Security verification is still completing. Please try again in a moment.');
+      return;
+    }
+
     setError('');
     setSubmitting(true);
 
@@ -112,18 +126,29 @@ export default function SubmitForm() {
       is_works_offline: data.get('is_works_offline') === 'on',
       is_mobile_friendly: data.get('is_mobile_friendly') === 'on',
       is_free_forever: data.get('is_free_forever') === 'on',
-      status: 'pending',
+      turnstile_token: turnstileToken,
+      company: data.get('company'),
     };
 
-    const result = await submitTool(payload);
-    setSubmitting(false);
+    try {
+      const result = await submitTool(payload);
 
-    if (result.error) {
-      setError(result.error);
-      return;
+      if (result.error) {
+        setError(result.error);
+        setTurnstileToken('');
+        setTurnstileReset((value) => value + 1);
+        return;
+      }
+
+      setSuccessEmail(email);
+      setSuccess(true);
+    } catch {
+      setError('Could not submit this tool right now. Please try again.');
+      setTurnstileToken('');
+      setTurnstileReset((value) => value + 1);
+    } finally {
+      setSubmitting(false);
     }
-    setSuccessEmail(email);
-    setSuccess(true);
   }
 
   if (success) {
@@ -437,9 +462,22 @@ export default function SubmitForm() {
           </div>
         </div>
 
+        <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1 }}>
+          <label htmlFor="submit-tool-company">Company</label>
+          <input id="submit-tool-company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
+          <TurnstileWidget
+            action="submit-tool"
+            resetKey={turnstileReset}
+            onTokenChange={setTurnstileToken}
+          />
+        </div>
+
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || !isTurnstileEnabledInBrowser() || !turnstileToken}
           style={{
             width: '100%',
             padding: 12,
@@ -450,11 +488,20 @@ export default function SubmitForm() {
             fontFamily: 'Inter, sans-serif',
             border: 'none',
             borderRadius: 'var(--radius)',
-            cursor: submitting ? 'not-allowed' : 'pointer',
-            opacity: submitting ? 0.5 : 1,
+            cursor:
+              submitting || !isTurnstileEnabledInBrowser() || !turnstileToken
+                ? 'not-allowed'
+                : 'pointer',
+            opacity: submitting || !isTurnstileEnabledInBrowser() || !turnstileToken ? 0.5 : 1,
           }}
         >
-          {submitting ? 'Submitting…' : 'Submit for review →'}
+          {submitting
+            ? 'Submitting…'
+            : !isTurnstileEnabledInBrowser()
+              ? 'Security unavailable'
+              : !turnstileToken
+                ? 'Checking browser…'
+                : 'Submit for review →'}
         </button>
         <p
           style={{
